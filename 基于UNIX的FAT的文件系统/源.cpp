@@ -1,5 +1,5 @@
 #include<iostream>
-#include "filesys.h"
+#include"filesys.h"
 
 int main() {
 	//╢Р©╙╢еел

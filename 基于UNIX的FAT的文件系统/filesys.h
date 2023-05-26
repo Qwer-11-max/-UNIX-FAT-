@@ -1,19 +1,19 @@
 #ifndef FILESYS_H
 #define FILESYS_H
-
+#include<stdio.h>
 #include<ctime>
 #include<stdbool.h>
 /*基础属性*/
 #define BLOCKSIZE 256 //块大小
-#define FILENAMESIZE 16 //文件名大小
+#define FILENAMESIZE 14 //文件名大小
 #define CLUSTERSIZE (4*BLOCKSIZE) //簇大小
 #define FATSIZE 512 //FAT表的大小
 #define BITMAPSIZE (FATSIZE/16) //位图的大小
 #define NADDR 10	//
-#define FILENAMESIZE 14 //文件名大小
+#define MAXUSERS	8	//用户数量限定
 /*用户属性*/
-#define USERNAMESIZE 32
-#define PWDSIZE 32 
+#define USERNAMESIZE 38 
+#define PWDSIZE 20 
 #define ADMIN 0x00 //管理员
 #define USER 0x01 //普通用户
 /*文件操作*/
@@ -46,18 +46,18 @@ typedef struct inode{
 	unsigned short				i_blkCnt; //块数
 	time_t						i_atime; // 最近访问时间
 	time_t						i_mtime; // 最近修改时间
-};
+}inode;
 //管理inode信息的链表
 typedef struct inode_list {
 	struct inode				*inode;	//inode信息
 	struct inode				* i_forwd; //前向节点 
 	struct inode				* i_bak;	//后继节点
-};
+}inode_list;
 
 typedef struct file {
 	char						f_name[FILENAMESIZE];	//文件名
 	unsigned short				f_ino;		//文件inode序号
-};
+}file;
 
 //用户结构体
 typedef struct user {
@@ -65,7 +65,10 @@ typedef struct user {
 	unsigned short				u_mode;	//用户的类别，如管理员与普通用户
 	char						u_name[USERNAMESIZE];	//用户名
 	char						u_pwd[PWDSIZE];		//密码
-};
+}user;
+
+//超级块，用于组织文件
+//一共占用两个块
 typedef struct superBlk {
 	unsigned int				disk_size;//磁盘大小
 	unsigned short				free_blk;//剩余空闲块数量
@@ -73,19 +76,14 @@ typedef struct superBlk {
 	struct inode				* root;	//根目录地址
 	unsigned short				bitmap[BITMAPSIZE];//空闲块位图，0表示空闲，1表示占用
 	unsigned short				bitmap_inode[BITMAPSIZE];//空闲inode节点位图，0表示空闲，1表示占用
+	unsigned short				FAT[FATSIZE];//FAT
 	unsigned short				inode_count;//已用inode节点的数量
 	unsigned short				inode_free;//空闲inode节点数量
 	bool						sys_Status ;//系统状态
-};
-//FAT
-unsigned short FAT1[FATSIZE] = {0}; //主表
-unsigned short FAT2[FATSIZE] = {0}; //备用表
-superBlk superblk;	//超级块
-FILE* disk;	//磁盘模拟文件
-inode_list i_head;	//管理链表文件
-inode *cur_dir; //当前目录位置
+	user						users[MAXUSERS];//存储的用户数据
+}superBlk;
 //函数
-struct inode* getInode(uid_t uid,gid_t gid,type_t type);	//获取inode节点
-void createFile(char * filelname,type_t type, uid_t uid, gid_t gid);
-void InitSys();	//初始化系统
+inode* getInode(superBlk * supblk,uid_t uid,gid_t gid,type_t type);	//获取inode节点
+void createFile(char * filelname,type_t type, uid_t uid, gid_t gid);//创建文件
+void InitSys(superBlk* supblk);	//初始化系统
 #endif

@@ -51,12 +51,14 @@ inode *getInode(uid_t uid, gid_t gid,type_t type) {
 }
 //创建文件
 void createFile(char * filename,type_t type,uid_t uid,gid_t gid){
+	fseek(disk, cur_dir->i_addr * CLUSTERSIZE, SEEK_SET);
+}
+//创建目录
+void mkdir(char* dirname) {
 
 }
 //初始化文件系统
 void InitSys() {
-	//打开磁盘
-	disk = fopen("disk.txt", "w+r");
 	//初始化用户
 	
 	//FAT表初始化, 前十九个用于系统文件，其余是空闲块
@@ -94,7 +96,7 @@ void InitSys() {
 	i_head.i_forwd = NULL;
 	i_head.i_bak = NULL;
 	i_head.inode = superblk.root;
-	i_cur = i_head;
+	cur_dir = superblk.root;
 	//初始化完毕
 	superblk.sys_Status = true;
 }

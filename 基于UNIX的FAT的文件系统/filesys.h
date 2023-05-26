@@ -75,17 +75,17 @@ typedef struct superBlk {
 	unsigned short				bitmap_inode[BITMAPSIZE];//空闲inode节点位图，0表示空闲，1表示占用
 	unsigned short				inode_count;//已用inode节点的数量
 	unsigned short				inode_free;//空闲inode节点数量
-	bool						sys_Status = false;//系统状态
+	bool						sys_Status ;//系统状态
 };
 //FAT
-unsigned short FAT1[FATSIZE]; //主表
-unsigned short FAT2[FATSIZE]; //备用表
+unsigned short FAT1[FATSIZE] = {0}; //主表
+unsigned short FAT2[FATSIZE] = {0}; //备用表
 superBlk superblk;	//超级块
 FILE* disk;	//磁盘模拟文件
 inode_list i_head;	//管理链表文件
-inode_list i_cur;	//当前链表指针
+inode *cur_dir; //当前目录位置
 //函数
-struct inode* getInode(uid_t uid,gid_t gid);	//获取inode节点
-void createFile(char * filelname);
+struct inode* getInode(uid_t uid,gid_t gid,type_t type);	//获取inode节点
+void createFile(char * filelname,type_t type, uid_t uid, gid_t gid);
 void InitSys();	//初始化系统
 #endif

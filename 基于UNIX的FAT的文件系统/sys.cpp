@@ -54,6 +54,51 @@ inode *getInode(superBlk *supblk,uid_t uid, gid_t gid,type_t type) {
 	supblk->inode_free -= 1;
 	return temp;
 }
+//找到文件占用的块序列
+unsigned short* getFATList(superBlk * supblk,inode* target) {
+	unsigned short* FATList = (unsigned short*)malloc(sizeof(unsigned short) * target->i_blkCnt);
+	if (!FATList) {
+		printf("内存分配错误");
+		exit(0);
+	}
+	int i = 0;
+	FATList[i] = target->i_addr;
+	unsigned short addr = supblk->FAT[target->i_addr];
+	while (addr != 0xffff) {
+		i += 1;
+		*(FATList + i) = addr;
+		addr = supblk->FAT[addr];
+	}
+	return FATList;
+}
+// 目录跳转
+int  setCurPath(superBlk* supblk, FILE* disk, inode* curPath, Files* fls, unsigned short nextDirIno) {
+	//保存旧目录信息
+	int curPoint = 0;
+	unsigned short data[CLUSTERSIZE / sizeof(unsigned)] = {0};
+	//更新当前目录的inode节点信息
+	fseek(disk, SUPERBLKSIZE * CLUSTERSIZE + curPath->i_ino * INODESIZE, SEEK_SET);
+	fwrite(curPath, sizeof(inode), 1, disk);
+	//将磁盘中的旧目录数据抹除
+	fseek(disk, SYSCLUSTERSIZE * CLUSTERSIZE + curPath->i_addr * CLUSTERSIZE,SEEK_SET);
+	fwrite(data, sizeof(unsigned short), CLUSTERSIZE / sizeof(unsigned), disk);
+	//写入旧的目录信息
+	fseek(disk, SYSCLUSTERSIZE * CLUSTERSIZE + curPath->i_addr * CLUSTERSIZE, SEEK_SET);
+	for (int i = 0; i < SUBFILENUM; i++) {
+		if (fls->file[i].f_name[0] !='\0') {
+			fwrite(&fls->file, sizeof(file), 1, disk);
+			fseek(disk,sizeof(file), SEEK_CUR);
+		}
+	}
+	//读取新目录信息
+	//1.读取inode
+	fseek(disk, SUPERBLKSIZE * CLUSTERSIZE + nextDirIno * INODESIZE, SEEK_SET);
+	fread(curPath, sizeof(inode), 1, disk);
+	//2.读取子文件
+	fseek(disk, SYSCLUSTERSIZE * CLUSTERSIZE + curPath->i_addr * CLUSTERSIZE, SEEK_SET);
+	fread(fls, sizeof(Files), 1, disk);
+	return 0;
+}
 //创建文件
 void createFile(superBlk* supblk,char * filename,type_t type,uid_t uid,gid_t gid){
 
@@ -87,6 +132,7 @@ void mkdir(superBlk* supblk,FILE* disk,char* dirname,uid_t uid,gid_t gid,unsigne
 	free(dirInode);
 	free(prnt_inode);
 }
+
 //初始化文件系统
 void InitSys(superBlk *supblk,FILE* disk) {
 	//初始化用户,创建root用户
@@ -121,12 +167,15 @@ void InitSys(superBlk *supblk,FILE* disk) {
 	}
 	//创建根目录
 	inode* root = getInode(supblk, 0, 0, DIR);
+	file rot;
+	rot.f_ino = root->i_ino;
+	strcpy(rot.f_name, "..");
 	//初始化根目录
 	supblk->root_ino = root->i_ino;
 	//将根目录inode数据写入磁盘
 	fseek(disk, CLUSTERSIZE * 2, SEEK_SET);
 	fwrite(root, sizeof(inode), 1, disk);
-	//创建基础的二级目录
+	//创建基础的二级目录,并将父目录写入到子目录的第一个条目中
 	file dir_buf[3] = {};
 	strcpy(dir_buf[0].f_name, "..");
 	dir_buf[0].f_ino = 1;
@@ -138,8 +187,13 @@ void InitSys(superBlk *supblk,FILE* disk) {
 	inode* etc = getInode(supblk, 0, 0, DIR);
 	fseek(disk, SUPERBLKSIZE * CLUSTERSIZE + dots->i_ino * INODESIZE, SEEK_SET);
 	fwrite(dots, sizeof(inode), 1, disk);
+	fseek(disk, SYSCLUSTERSIZE * CLUSTERSIZE + dots->i_addr * CLUSTERSIZE, SEEK_SET);
+	fwrite(&rot, sizeof(file), 1, disk);
 	fseek(disk, SUPERBLKSIZE * CLUSTERSIZE + etc->i_ino * INODESIZE, SEEK_SET);
 	fwrite(etc, sizeof(inode), 1, disk);
+	fseek(disk, SYSCLUSTERSIZE * CLUSTERSIZE + etc->i_addr * CLUSTERSIZE, SEEK_SET);
+	fwrite(&rot, sizeof(file), 1, disk);
+	
 	free(etc);
 	free(dots);
 	//将二级目录写入到根目录下
@@ -148,4 +202,45 @@ void InitSys(superBlk *supblk,FILE* disk) {
 	free(root);
 	//初始化完毕
 	supblk->sys_Status = true;
+}
+//系统开机
+void powerOn(FILE** disk, superBlk** supblk, inode** curPath, Files** fls) {
+	//打开磁盘
+	*disk = fopen("disk", "r+");
+	if (!disk) {
+		printf("磁盘打开失败");
+		exit(0);
+	}
+	//读取超级块
+	*supblk = (superBlk*)malloc(sizeof(superBlk));
+	if (!(*supblk)) {
+		printf("超级块创建失败");
+		exit(1);
+	}
+	fread(*supblk, sizeof(superBlk), 1, *disk);
+	//如果是第一次启动系统则初始化系统
+	if (!(*supblk)->sys_Status) {
+		InitSys(*supblk, *disk);
+	}
+	//将当前目录置为根目录
+	*curPath = (inode*)malloc(sizeof(inode));
+	if (!(*curPath)) {
+		printf("内存分配失败");
+		exit(0);
+	}
+	fseek(*disk, (*supblk)->root_ino * INODESIZE + SUPERBLKSIZE * CLUSTERSIZE, SEEK_SET);
+	fread(*curPath, sizeof(inode), 1, *disk);
+	//读取根目录子文件信息
+	*fls = (Files*)malloc(sizeof(Files));
+	if (!(*fls)) {
+		printf("子文件列表创建失败");
+		exit(0);
+	}
+	unsigned short* FATList = getFATList(*supblk, *curPath);
+	int j = 0;
+	for (int i = 0; i <(*curPath)->i_blkCnt; i++) {
+		fseek(*disk, SYSCLUSTERSIZE * CLUSTERSIZE + FATList[i] * CLUSTERSIZE, SEEK_SET);
+		fread(&(*fls)->file[j], sizeof(file), CLUSTERSIZE / sizeof(file), *disk);
+		j += CLUSTERSIZE / sizeof(file);
+	}
 }

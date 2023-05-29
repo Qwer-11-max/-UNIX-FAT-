@@ -5,37 +5,14 @@
 #include"filesys.h"
 
 int main() {
-	//打开磁盘
-	FILE* disk;
-	disk = fopen("disk", "r+");
-	//创建超级块
-	superBlk* supblk = (superBlk*)malloc(sizeof(superBlk));
-	if (!supblk) {
-		printf("超级块创建失败");
-		exit(1);
-	}
-	fread(supblk, sizeof(superBlk), 1, disk);
-	//如果是第一次启动系统则初始化系统
-	if (!supblk->sys_Status) {
-		InitSys(supblk, disk);
-	}
-	//获取系统当前目录
-	inode* cur_path = (inode*)malloc(sizeof(inode));
-	if (!cur_path) {
-		printf("内存分配失败");
-		exit(0);
-	}
-	fseek(disk, supblk->root_ino * INODESIZE + SUPERBLKSIZE * CLUSTERSIZE, SEEK_SET);
-	fread(cur_path, sizeof(inode), 1, disk);
-	//获取当前目录下文件信息
-	files files = {NULL,0};
-	int j = 0;
-	for (int i = 0; i < cur_path->i_blkCnt; i++) {
-		fseek(disk, SYSCLUSTERSIZE*CLUSTERSIZE + cur_path->i_addr * CLUSTERSIZE, SEEK_SET);
-		fread(&files.file[j], sizeof(file), CLUSTERSIZE / sizeof(file), disk);
-		j += CLUSTERSIZE / sizeof(file);
-	}
-	//关闭磁盘 
+	//创建几个指针，用于保存系统运行时所需要的数据
+	FILE* disk = NULL; //模拟磁盘的文件
+	superBlk* supblk = NULL; // 超级块信息
+	inode* curPath = NULL; //当前目录
+	Files* files = NULL; //当前目录的子文件列表
+	//模拟开机
+	powerOn(&disk, &supblk, &curPath, &files); 
+	setCurPath(supblk,disk,curPath,files,2);
 	fclose(disk);
 
 	////创建一个磁盘

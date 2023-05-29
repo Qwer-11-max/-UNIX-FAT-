@@ -12,7 +12,7 @@
 #define FATSIZE				512		//FAT表的大小
 #define BITMAPSIZE			(FATSIZE/16)	//位图的大小
 #define MAXUSERS			8		//用户数量限定
-#define SUBFILENUM			128		//一个目录下文件数量限制
+#define SUBFILENUM			(CLUSTERSIZE/(FILENAMESIZE+2))		//一个目录下文件数量限制
 /*磁盘划分*/
 #define SUPERBLKSIZE		2	//超级块占用两个簇
 #define INODEBLKSIZE		(INODESIZE*CLUSTERNUM/CLUSTERSIZE) //inode区占用的簇大小
@@ -50,36 +50,30 @@ typedef struct inode{
 	time_t						i_atime; // 最近访问时间
 	time_t						i_mtime; // 最近修改时间
 }inode;
-//管理inode信息的链表
-typedef struct inode_list {
-	struct inode				*inode;	//inode信息
-	struct inode				* i_forwd; //前向节点 
-	struct inode				* i_bak;	//后继节点
-}inode_list;
 
 typedef struct file {
 	char						f_name[FILENAMESIZE];	//文件名
 	unsigned short				f_ino;		//文件inode序号
 }file;
 
-typedef struct files {
+typedef struct Files {
 	file						file[SUBFILENUM]; //子文件信息
 	unsigned					size; //子文件数量
-}files;
+}Files;
 
 //用户结构体
-typedef struct user {
+typedef struct User {
 	uid_t						uid;	//用户id
 	unsigned short				u_mode;	//用户的类别，如管理员与普通用户
 	char						u_name[USERNAMESIZE];	//用户名
 	char						u_pwd[PWDSIZE];		//密码
-}user;
+}User;
 
 //超级块，用于组织文件
 //一共占用两个块
 typedef struct superBlk {
 	unsigned int				disk_size;//磁盘大小
-	unsigned short				free_blk;//剩余空闲块数量
+	unsigned short				free_blk;//剩余空闲簇数量
 	unsigned int				free_disk;//剩余磁盘大小
 	unsigned short				root_ino;	//根目录ino编号
 	unsigned short				bitmap[BITMAPSIZE];//空闲块位图，0表示空闲，1表示占用
@@ -88,10 +82,14 @@ typedef struct superBlk {
 	unsigned short				inode_count;//已用inode节点的数量
 	unsigned short				inode_free;//空闲inode节点数量
 	bool						sys_Status ;//系统状态
-	user						users[MAXUSERS];//存储的用户数据
+	User						users[MAXUSERS];//存储的用户数据
 }superBlk;
+
 //函数
 inode* getInode(superBlk* supblk, uid_t uid, gid_t gid, type_t type);	//获取inode节点
+unsigned short* getFATList(superBlk* supblk, inode* target); //找到文件占用的块序列
+int  setCurPath(superBlk* supblk, FILE* disk, inode* curPath, Files* files, unsigned short nextDirIno); // 目录跳转
+void powerOn(FILE** disk, superBlk** supblk, inode** curPath, Files** files); //系统开机
 void createFile(superBlk* supblk, char* filename, type_t type, uid_t uid, gid_t gid);//创建文件
 void InitSys(superBlk* supblk, FILE* disk);	//初始化系统
 void mkdir(superBlk* supblk,FILE* disk, char* dirname, uid_t uid, gid_t gid, unsigned short prnt_ino);

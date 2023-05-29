@@ -27,9 +27,6 @@ inode *getInode(superBlk *supblk,uid_t uid, gid_t gid,type_t type) {
 	for (int i = 1; i < FATSIZE; i++) {
 		if (supblk->FAT[i] == 0) {
 			temp->i_addr = i;
-			int row = i / 16;
-			int col = i % 16;
-			SetOne(supblk->bitmap[row], col);
 			supblk->FAT[i] = -1;	//表示文件被占用且当前位置为文件的最后一块
 			supblk->free_blk -= 1; //空闲块减一
 			supblk->free_disk -= CLUSTERSIZE; //空闲空间减一个簇大小
@@ -99,6 +96,24 @@ int  setCurPath(superBlk* supblk, FILE* disk, inode* curPath, Files* fls, unsign
 	fread(fls, sizeof(Files), 1, disk);
 	return 0;
 }
+//遍历目录子文件列表，找到文件名对应的ino，如果没有则返回-1即0xFFFF
+unsigned short getIno(Files* fls,FILE* disk, char* filename,type_t type) {
+	for (int i = 0; i < SUBFILENUM; i++) {
+		//判断文件名是否一致
+		if (!strcmp(filename,fls->file[i].f_name)) {
+			inode temp = {};
+			fseek(disk, SUPERBLKSIZE * CLUSTERSIZE + fls->file[i].f_ino * INODESIZE, SEEK_SET);
+			fread(&temp, sizeof(inode), 1, disk);
+			//判断文件类型是否一致
+			if(temp.i_type == type)
+				//返回ino
+				return fls->file[i].f_ino;
+		}
+	}
+	//不存在这个文件则返回-1
+	return -1;
+}
+//
 //创建文件
 void createFile(superBlk* supblk,char * filename,type_t type,uid_t uid,gid_t gid){
 
@@ -155,12 +170,6 @@ void InitSys(superBlk *supblk,FILE* disk) {
 	supblk->free_disk = 504832;
 	supblk->inode_count = 1;
 	supblk->inode_free = 511;
-	//初始化空闲块位图，前18个块被系统占用
-	for (int i = 0; i < BITMAPSIZE; i++) {
-		supblk->bitmap[i] = 0;
-	}
-	supblk->bitmap[0] = 0xffff;
-	supblk->bitmap[1] = 0x03;
 	//初始化空闲inode位图
 	for (int i = 0; i < BITMAPSIZE; i++) {
 		supblk->bitmap_inode[i] = 0;

@@ -76,7 +76,6 @@ typedef struct superBlk {
 	unsigned short				free_blk;//剩余空闲簇数量
 	unsigned int				free_disk;//剩余磁盘大小
 	unsigned short				root_ino;	//根目录ino编号
-	unsigned short				bitmap[BITMAPSIZE];//空闲块位图，0表示空闲，1表示占用
 	unsigned short				bitmap_inode[BITMAPSIZE];//空闲inode节点位图，0表示空闲，1表示占用
 	unsigned short				FAT[FATSIZE];//FAT
 	unsigned short				inode_count;//已用inode节点的数量
@@ -90,7 +89,8 @@ inode* getInode(superBlk* supblk, uid_t uid, gid_t gid, type_t type);	//获取inod
 unsigned short* getFATList(superBlk* supblk, inode* target); //找到文件占用的块序列
 int  setCurPath(superBlk* supblk, FILE* disk, inode* curPath, Files* files, unsigned short nextDirIno); // 目录跳转
 void powerOn(FILE** disk, superBlk** supblk, inode** curPath, Files** files); //系统开机
-void createFile(superBlk* supblk, char* filename, type_t type, uid_t uid, gid_t gid);//创建文件
+void createFile(superBlk* supblk, char* filename,Files* fls, type_t type, uid_t uid, gid_t gid);//创建文件
+unsigned short getIno(Files* fls, FILE* disk, char* filename, type_t type);//遍历目录子文件列表，找到文件名对应的ino，如果没有则返回-1即0xFFFF
 void InitSys(superBlk* supblk, FILE* disk);	//初始化系统
 void mkdir(superBlk* supblk,FILE* disk, char* dirname, uid_t uid, gid_t gid, unsigned short prnt_ino);
 

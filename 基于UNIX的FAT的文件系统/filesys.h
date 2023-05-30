@@ -84,15 +84,19 @@ typedef struct superBlk {
 	User						users[MAXUSERS];//存储的用户数据
 }superBlk;
 
-//函数
+//通用模块
 inode* getInode(superBlk* supblk, uid_t uid, gid_t gid, type_t type);	//获取inode节点
 unsigned short* getFATList(superBlk* supblk, inode* target); //找到文件占用的块序列
-int  setCurPath(superBlk* supblk, FILE* disk, inode* curPath, Files* files, unsigned short nextDirIno); // 目录跳转
-void powerOn(FILE** disk, superBlk** supblk, inode** curPath, Files** files); //系统开机
-void createFile(superBlk* supblk, char* filename,Files* fls, type_t type, uid_t uid, gid_t gid);//创建文件
+int  setCurPath(superBlk* supblk, FILE* disk, inode* curPath, Files* fls, unsigned short nextDirIno); // 目录跳转
 int freeInode(superBlk* supblk, FILE* disk, unsigned short ino); //释放占用的inode
 unsigned short getIno(Files* fls, FILE* disk, char* filename, type_t type);//遍历目录子文件列表，找到文件名对应的ino，如果没有则返回-1即0xFFFF
+//功能模块
+void mainWindows(superBlk* supblk, FILE* disk, inode* curPath, User* curUser, Files* fls, Files* path); //系统子界面
+void createFile(superBlk* supblk, char* filename, Files* fls, type_t type, uid_t uid, gid_t gid);//创建文件
+void powerOn(FILE** disk, superBlk** supblk, inode** curPath, Files** files, Files** path); //系统开机
 void InitSys(superBlk* supblk, FILE* disk);	//初始化系统
-void mkdir(superBlk* supblk,FILE* disk, char* dirname, uid_t uid, gid_t gid, unsigned short prnt_ino);
-
+void mkdir(superBlk* supblk,FILE* disk, char* dirname, uid_t uid, gid_t gid, unsigned short prnt_ino);//创建目录
+User* login(superBlk* superBlk1, char* u_name, char* u_pwd, User* act_user);//登录函数,返回用户结构体的指针。
+bool create_user(superBlk* superBlk1, char* new_name, char* new_pwd);//创建新用户函数,返回bool类型
+void chdir(superBlk* supblk,FILE* disk,inode* curPath,Files* fls,Files* path); //目录跳转
 #endif

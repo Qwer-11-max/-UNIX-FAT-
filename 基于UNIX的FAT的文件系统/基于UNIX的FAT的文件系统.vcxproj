@@ -130,6 +130,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="creatFile.cpp" />
+    <ClCompile Include="dir.cpp" />
+    <ClCompile Include="login.cpp" />
     <ClCompile Include="sys.cpp" />
     <ClCompile Include="源.cpp" />
   </ItemGroup>
@@ -137,6 +139,7 @@
     <ClInclude Include="filesys.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\OneDrive\桌面\操作系统\操作系统.docx" />
     <None Include="disk" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

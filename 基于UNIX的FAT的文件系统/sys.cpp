@@ -213,7 +213,7 @@ void InitSys(superBlk *supblk,FILE* disk) {
 	supblk->sys_Status = true;
 }
 //ÏµÍ³¿ª»ú
-void powerOn(FILE** disk, superBlk** supblk, inode** curPath, Files** fls) {
+void powerOn(FILE** disk, superBlk** supblk, inode** curPath, Files** fls,Files** path) {
 	//´ò¿ª´ÅÅÌ
 	*disk = fopen("disk", "r+");
 	if (!disk) {
@@ -239,6 +239,15 @@ void powerOn(FILE** disk, superBlk** supblk, inode** curPath, Files** fls) {
 	}
 	fseek(*disk, (*supblk)->root_ino * INODESIZE + SUPERBLKSIZE * CLUSTERSIZE, SEEK_SET);
 	fread(*curPath, sizeof(inode), 1, *disk);
+	//ÉèÖÃÂ·¾¶ÐÅÏ¢
+	*path = (Files*)malloc(sizeof(Files));
+	if (!(*path)) {
+		printf("Â·¾¶ÎÄ¼þ´´½¨Ê§°Ü");
+		exit(0);
+	}
+	(*path)->file[0].f_ino = 0;
+	(*path)->size = 1;
+	strcpy((*path)->file[0].f_name, "..");
 	//¶ÁÈ¡¸ùÄ¿Â¼×ÓÎÄ¼þÐÅÏ¢
 	*fls = (Files*)malloc(sizeof(Files));
 	if (!(*fls)) {
@@ -253,4 +262,27 @@ void powerOn(FILE** disk, superBlk** supblk, inode** curPath, Files** fls) {
 		j += CLUSTERSIZE / sizeof(file);
 	}
 }
-	printf("ç³»ç»Ÿå‰©ä½™èµ„æºèµ„æºä¸€è§ˆ:\n");
+
+//Ö÷½çÃæ
+void mainWindows(superBlk* supblk, FILE* disk, inode* curPath, User* curUser, Files* fls,Files* path) {
+	printf("ÏµÍ³Ê£Óà×ÊÔ´×ÊÔ´Ò»ÀÀ:\n");
+	printf("================================================================================================\n");
+	printf("| ´ÅÅÌ´óÐ¡£º%10d Byte\t| ´ÅÅÌÊ£Óà¿Õ¼ä: %10d Byte\t| ´ÅÅÌÊ£ÓàinodeÊýÁ¿£º%10d|\n", supblk->disk_size, supblk->free_disk, supblk->inode_free);
+	printf("| ´ÅÅÌÒÑÓÃinodeÊýÁ¿£º%10d\t| Ê£Óà¿ÕÏÐ´Ø: %10d\t\n", supblk->inode_count, supblk->free_blk);
+	printf("================================================================================================\n");
+	printf("¹¦ÄÜÁÐ±í:\n");
+	printf("1.´´½¨ÎÄ¼þ\n2.É¾³ýÎÄ¼þ\n3.Ìø×ªÄ¿Â¼\n");
+	printf("<root@0>C:");
+	for (int i = 0; i < path->size; i++) {
+		printf("\\%s", path->file[i].f_name);
+	}
+	printf(">");
+	int choice;
+	scanf("%d", &choice);
+
+	switch (choice) {
+	case 3:chdir(supblk, disk, curPath, fls, path);
+		break;
+	default:break;
+	}
+}

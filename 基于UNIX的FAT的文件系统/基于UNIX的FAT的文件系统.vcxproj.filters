@@ -24,6 +24,12 @@
     <ClCompile Include="creatFile.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="dir.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="login.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="filesys.h">
@@ -32,6 +38,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="disk">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="..\..\..\..\OneDrive\桌面\操作系统\操作系统.docx">
       <Filter>资源文件</Filter>
     </None>
   </ItemGroup>

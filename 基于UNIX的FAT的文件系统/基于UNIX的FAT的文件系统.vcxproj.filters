@@ -24,7 +24,10 @@
     <ClCompile Include="creatFile.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Ls.cpp">
+    <ClCompile Include="dir.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="login.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="OpenFile.cpp">
@@ -43,7 +46,7 @@
     <None Include="disk">
       <Filter>资源文件</Filter>
     </None>
-    <None Include="..\..\..\..\..\Desktop\操作系统.docx">
+    <None Include="..\..\..\..\OneDrive\桌面\操作系统\操作系统.docx">
       <Filter>资源文件</Filter>
     </None>
   </ItemGroup>

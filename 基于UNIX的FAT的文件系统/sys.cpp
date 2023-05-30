@@ -213,7 +213,7 @@ void InitSys(superBlk *supblk,FILE* disk) {
 	supblk->sys_Status = true;
 }
 //系统开机
-void powerOn(FILE** disk, superBlk** supblk, inode** curPath, Files** fls) {
+void powerOn(FILE** disk, superBlk** supblk, inode** curPath, Files** fls,Files** path) {
 	//打开磁盘
 	*disk = fopen("disk", "r+");
 	if (!disk) {
@@ -239,6 +239,15 @@ void powerOn(FILE** disk, superBlk** supblk, inode** curPath, Files** fls) {
 	}
 	fseek(*disk, (*supblk)->root_ino * INODESIZE + SUPERBLKSIZE * CLUSTERSIZE, SEEK_SET);
 	fread(*curPath, sizeof(inode), 1, *disk);
+	//设置路径信息
+	*path = (Files*)malloc(sizeof(Files));
+	if (!(*path)) {
+		printf("路径文件创建失败");
+		exit(0);
+	}
+	(*path)->file[0].f_ino = 0;
+	(*path)->size = 1;
+	strcpy((*path)->file[0].f_name, "..");
 	//读取根目录子文件信息
 	*fls = (Files*)malloc(sizeof(Files));
 	if (!(*fls)) {
@@ -251,5 +260,29 @@ void powerOn(FILE** disk, superBlk** supblk, inode** curPath, Files** fls) {
 		fseek(*disk, SYSCLUSTERSIZE * CLUSTERSIZE + FATList[i] * CLUSTERSIZE, SEEK_SET);
 		fread(&(*fls)->file[j], sizeof(file), CLUSTERSIZE / sizeof(file), *disk);
 		j += CLUSTERSIZE / sizeof(file);
+	}
+}
+
+//主界面
+void mainWindows(superBlk* supblk, FILE* disk, inode* curPath, User* curUser, Files* fls,Files* path) {
+	printf("系统剩余资源资源一览:\n");
+	printf("================================================================================================\n");
+	printf("| 磁盘大小：%10d Byte\t| 磁盘剩余空间: %10d Byte\t| 磁盘剩余inode数量：%10d|\n", supblk->disk_size, supblk->free_disk, supblk->inode_free);
+	printf("| 磁盘已用inode数量：%10d\t| 剩余空闲簇: %10d\t\n", supblk->inode_count, supblk->free_blk);
+	printf("================================================================================================\n");
+	printf("功能列表:\n");
+	printf("1.创建文件\n2.删除文件\n3.跳转目录\n");
+	printf("<root@0>C:");
+	for (int i = 0; i < path->size; i++) {
+		printf("\\%s", path->file[i].f_name);
+	}
+	printf(">");
+	int choice;
+	scanf("%d", &choice);
+
+	switch (choice) {
+	case 3:chdir(supblk, disk, curPath, fls, path);
+		break;
+	default:break;
 	}
 }

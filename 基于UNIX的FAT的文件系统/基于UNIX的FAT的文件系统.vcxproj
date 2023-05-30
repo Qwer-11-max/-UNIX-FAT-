@@ -133,6 +133,7 @@
     <ClCompile Include="creatFile.cpp" />
     <ClCompile Include="dir.cpp" />
     <ClCompile Include="login.cpp" />
+    <ClCompile Include="OpenFile.cpp" />
     <ClCompile Include="sys.cpp" />
     <ClCompile Include="源.cpp" />
     <ClCompile Include="Ls.cpp" />

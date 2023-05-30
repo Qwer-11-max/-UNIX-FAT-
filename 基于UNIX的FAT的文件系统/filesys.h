@@ -96,13 +96,16 @@ unsigned short* getFATList(superBlk* supblk, inode* target); //ÕÒµ½ÎÄ¼şÕ¼ÓÃµÄ¿éĞ
 int  setCurPath(superBlk* supblk, FILE* disk, inode* curPath, Files* fls, unsigned short nextDirIno); // Ä¿Â¼Ìø×ª
 int freeInode(superBlk* supblk, FILE* disk, unsigned short ino); //ÊÍ·ÅÕ¼ÓÃµÄinode
 unsigned short getIno(Files* fls, FILE* disk, char* filename, type_t type);//±éÀúÄ¿Â¼×ÓÎÄ¼şÁĞ±í£¬ÕÒµ½ÎÄ¼şÃû¶ÔÓ¦µÄino£¬Èç¹ûÃ»ÓĞÔò·µ»Ø-1¼´0xFFFF
+void allocBlk(superBlk* supblk, inode* target, unsigned short size); //ÎªÎÄ¼ş·ÖÅä¶îÍâµÄ¿Õ¼ä
 //¹¦ÄÜÄ£¿é
 void mainWindows(superBlk* supblk, FILE* disk, inode* curPath, User* curUser, Files* fls, Files* path); //ÏµÍ³×Ó½çÃæ
-void createFile(superBlk* supblk, char* filename, Files* fls, type_t type, uid_t uid, gid_t gid);//´´½¨ÎÄ¼ş
+void creatFile(superBlk* supblk, FILE* disk, Files* fls, uid_t uid, gid_t gid);//´´½¨ÎÄ¼ş
 void powerOn(FILE** disk, superBlk** supblk, inode** curPath, Files** files, Files** path); //ÏµÍ³¿ª»ú
 void InitSys(superBlk* supblk, FILE* disk);	//³õÊ¼»¯ÏµÍ³
-void mkdir(superBlk* supblk,FILE* disk, char* dirname, uid_t uid, gid_t gid, unsigned short prnt_ino);//´´½¨Ä¿Â¼
+void mkdir(superBlk* supblk, FILE* disk, Files* fls);//´´½¨Ä¿Â¼
 User* login(superBlk* superBlk1, char* u_name, char* u_pwd, User* act_user);//µÇÂ¼º¯Êı,·µ»ØÓÃ»§½á¹¹ÌåµÄÖ¸Õë¡£
 bool create_user(superBlk* superBlk1, char* new_name, char* new_pwd);//´´½¨ĞÂÓÃ»§º¯Êı,·µ»ØboolÀàĞÍ
 void chdir(superBlk* supblk,FILE* disk,inode* curPath,Files* fls,Files* path); //Ä¿Â¼Ìø×ª
+void Ls(Files* fls);//Õ¹Ê¾µ±Ç°Ä¿Â¼Ëù°üº¬ÎÄ¼şÃû
+
 #endif

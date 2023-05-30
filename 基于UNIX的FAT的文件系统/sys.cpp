@@ -3,10 +3,45 @@
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
-
+#include <math.h>
 //将一个二进制数的loc位置为1
 #define SetOne(x,loc) x = ( x | 1<<loc)
 
+//为文件分配额外的空间
+void allocBlk(superBlk* supblk, inode* target, unsigned short size) {
+	unsigned short blkSize = ceil( float(size) / CLUSTERSIZE); //计算要分配的簇数
+	if (supblk->free_blk < blkSize) {
+		printf("磁盘空间不足");
+		return;
+	}
+	supblk->free_blk -= blkSize;
+	supblk->free_disk -= blkSize * CLUSTERSIZE;
+	int lastloc = target->i_blkCnt - 1;  //记录当前文件的簇数
+	target->i_blkCnt += blkSize; // 更新后的簇数
+	target->i_size = target->i_blkCnt * CLUSTERSIZE;//更新后的文件大小
+	unsigned short* FATList = getFATList(supblk, target); //获取当前文件的簇序列
+	//分配空闲簇
+	int last = 0;
+	for (int i = 0; i < FATSIZE; i++) {
+		if (supblk->FAT[i] == 0) {
+			if (supblk->FAT[FATList[lastloc]] == 0xffff) {
+				supblk->FAT[FATList[lastloc]] = i;
+				last = i;
+			}
+			else {
+				supblk->FAT[last] = i;
+				last = i;
+			}
+			blkSize -= 1;
+		}
+		if (blkSize == 0) {
+			supblk->FAT[last] = 0xffff;
+			printf("空间分配完毕");
+			break;
+		}
+	}
+	free(FATList);
+}
 //分配inode节点
 inode *getInode(superBlk *supblk,uid_t uid, gid_t gid,type_t type) {
 	inode* temp = (inode*)malloc(sizeof(inode));
@@ -19,7 +54,7 @@ inode *getInode(superBlk *supblk,uid_t uid, gid_t gid,type_t type) {
 	temp->i_gid = gid;	//组id
 	temp->i_acl = 0;	//文件权限
 	temp->i_type = type;	//文件类型
-	temp->i_size = 1;	//文件大小
+	temp->i_size = CLUSTERSIZE;	//文件大小
 	temp->i_blkCnt = 1;	//文件块计数
 	time(&temp->i_mtime);	//文件修改时间
 	temp->i_atime = temp->i_mtime;	//文件修改时间
@@ -27,7 +62,7 @@ inode *getInode(superBlk *supblk,uid_t uid, gid_t gid,type_t type) {
 	for (int i = 1; i < FATSIZE; i++) {
 		if (supblk->FAT[i] == 0) {
 			temp->i_addr = i;
-			supblk->FAT[i] = -1;	//表示文件被占用且当前位置为文件的最后一块
+			supblk->FAT[i] = 0xffff;	//表示文件被占用且当前位置为文件的最后一块
 			supblk->free_blk -= 1; //空闲块减一
 			supblk->free_disk -= CLUSTERSIZE; //空闲空间减一个簇大小
 			break;
@@ -132,6 +167,7 @@ int freeInode(superBlk* supblk, FILE* disk, unsigned short ino) {
 		fseek(disk, CLUSTERSIZE * SYSCLUSTERSIZE + FATList[i] * CLUSTERSIZE, SEEK_SET);
 		fwrite(data,sizeof(unsigned short),CLUSTERSIZE / sizeof(unsigned short),disk);
 	}
+	free(FATList);
 	//释放占用的inode块
 	unsigned short data1[INODESIZE / sizeof(unsigned short)] = { 0 };
 	fseek(disk, CLUSTERSIZE * SUPERBLKSIZE + ino * INODESIZE, SEEK_SET);
@@ -261,18 +297,19 @@ void powerOn(FILE** disk, superBlk** supblk, inode** curPath, Files** fls,Files*
 		fread(&(*fls)->file[j], sizeof(file), CLUSTERSIZE / sizeof(file), *disk);
 		j += CLUSTERSIZE / sizeof(file);
 	}
+	free(FATList);
 }
 
 //主界面
 void mainWindows(superBlk* supblk, FILE* disk, inode* curPath, User* curUser, Files* fls,Files* path) {
-	printf("系统剩余资源资源一览:\n");
-	printf("================================================================================================\n");
-	printf("| 磁盘大小：%10d Byte\t| 磁盘剩余空间: %10d Byte\t| 磁盘剩余inode数量：%10d|\n", supblk->disk_size, supblk->free_disk, supblk->inode_free);
-	printf("| 磁盘已用inode数量：%10d\t| 剩余空闲簇: %10d\t\n", supblk->inode_count, supblk->free_blk);
-	printf("================================================================================================\n");
-	printf("功能列表:\n");
-	printf("1.创建文件\n2.删除文件\n3.跳转目录\n");
-	printf("<root@0>C:");
+	//printf("系统剩余资源资源一览:\n");
+	//printf("================================================================================================\n");
+	//printf("| 磁盘大小：%10d Byte\t| 磁盘剩余空间: %10d Byte\t| 磁盘剩余inode数量：%10d|\n", supblk->disk_size, supblk->free_disk, supblk->inode_free);
+	//printf("| 磁盘已用inode数量：%10d\t| 剩余空闲簇: %10d\t\n", supblk->inode_count, supblk->free_blk);
+	//printf("================================================================================================\n");
+	//printf("功能列表:\n");
+	//printf("1.创建文件\n2.删除文件\n3.跳转目录\n4.创建目录\n5.列出当前目录子文件列表");
+	printf("<root@0>  C:");
 	for (int i = 0; i < path->size; i++) {
 		printf("\\%s", path->file[i].f_name);
 	}
@@ -281,7 +318,15 @@ void mainWindows(superBlk* supblk, FILE* disk, inode* curPath, User* curUser, Fi
 	scanf("%d", &choice);
 
 	switch (choice) {
+	case 1:creatFile(supblk, disk, fls, 0, 0);
+		break;
+	case 2:
+		break;
 	case 3:chdir(supblk, disk, curPath, fls, path);
+		break;
+	case 4:mkdir(supblk, disk, fls);
+		break;
+	case 5:Ls(fls);
 		break;
 	default:break;
 	}

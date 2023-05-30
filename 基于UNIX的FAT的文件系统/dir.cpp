@@ -31,3 +31,26 @@ void chdir(superBlk* supblk, FILE* disk, inode* curPath, Files* fls, Files* path
 	}
 	fflush(stdin);
 }
+
+void mkdir(superBlk* supblk, FILE* disk, Files* fls) {
+	//输入子目录名
+	char filename[FILENAMESIZE];
+	printf("请输入子目录名");
+	scanf("%s", filename);
+	//判断目录是否存在
+	unsigned short ino = getIno(fls, disk, filename, DIR);
+	if (ino == 0xffff) { //不存在则创建新目录
+ 		inode* temp = getInode(supblk, 0, 0, DIR);
+		for (int i = 0; i < SUBFILENUM; i++) {
+			if (fls->file[i].f_name[0] == '\0') {
+				strcpy(fls->file[i].f_name, filename);
+				fls->file[i].f_ino = temp->i_ino;
+				break;
+			}
+		}
+		printf("目录创建成功");
+	}
+	else { // 存在则打印错误信息
+		printf("该目录已存在");
+	}
+}

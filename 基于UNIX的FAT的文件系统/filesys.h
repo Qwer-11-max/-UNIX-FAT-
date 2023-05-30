@@ -106,4 +106,6 @@ void mkdir(superBlk* supblk,FILE* disk, char* dirname, uid_t uid, gid_t gid, uns
 User* login(superBlk* superBlk1, char* u_name, char* u_pwd, User* act_user);//登录函数,返回用户结构体的指针。
 bool create_user(superBlk* superBlk1, char* new_name, char* new_pwd);//创建新用户函数,返回bool类型
 void chdir(superBlk* supblk,FILE* disk,inode* curPath,Files* fls,Files* path); //目录跳转
+void OpenFile(Files* fls, FILE* disk, char* filename, type_t type, Openqueue* queue)//将特定文件加入打开队列
+void CloseFile(char* filename, type_t type, Openqueue* queue);//将特定文件从打开队列删除
 #endif

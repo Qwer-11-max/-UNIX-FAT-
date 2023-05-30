@@ -65,6 +65,7 @@ typedef struct Files {
 typedef struct Openqueue {
 	char						f_name[FILENAMESIZE];	//文件名
 	unsigned short				f_ino;		//文件inode序号
+	type_t						i_type;   //文件类型
 }Openqueue;
 
 //用户结构体

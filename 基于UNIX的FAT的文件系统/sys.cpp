@@ -308,7 +308,7 @@ void mainWindows(superBlk* supblk, FILE* disk, inode* curPath, User* curUser, Fi
 	//printf("| 磁盘已用inode数量：%10d\t| 剩余空闲簇: %10d\t\n", supblk->inode_count, supblk->free_blk);
 	//printf("================================================================================================\n");
 	//printf("功能列表:\n");
-	//printf("1.创建文件\n2.删除文件\n3.跳转目录\n4.创建目录\n5.列出当前目录子文件列表");
+	//printf("1.创建文件\n2.删除文件\n3.跳转目录\n4.创建目录\n5.列出当前目录子文件列表\n");
 	printf("<root@0>  C:");
 	for (int i = 0; i < path->size; i++) {
 		printf("\\%s", path->file[i].f_name);

@@ -13,12 +13,11 @@ int main() {
 	Files* path = NULL;
 	//模拟开机
 	powerOn(&disk, &supblk, &curPath, &files,&path); 
-	allocBlk(supblk, curPath, 1028);
 	//登录
-	//while (1) {
-	//	mainWindows(supblk, disk, curPath, NULL, files, path);
-	//	//system("cls");
-	//}
+	while (1) {
+		mainWindows(supblk, disk, curPath, NULL, files, path);
+		//system("cls");
+	}
 	fclose(disk);
 
 	////创建一个磁盘

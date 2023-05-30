@@ -61,6 +61,12 @@ typedef struct Files {
 	unsigned					size; //子文件数量
 }Files;
 
+
+typedef struct Openqueue {
+	char						f_name[FILENAMESIZE];	//文件名
+	unsigned short				f_ino;		//文件inode序号
+}Openqueue;
+
 //用户结构体
 typedef struct User {
 	uid_t						uid;	//用户id

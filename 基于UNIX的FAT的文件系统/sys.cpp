@@ -253,3 +253,4 @@ void powerOn(FILE** disk, superBlk** supblk, inode** curPath, Files** fls) {
 		j += CLUSTERSIZE / sizeof(file);
 	}
 }
+	printf("系统剩余资源资源一览:\n");

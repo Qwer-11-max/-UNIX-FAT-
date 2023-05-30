@@ -89,7 +89,7 @@ inode* getInode(superBlk* supblk, uid_t uid, gid_t gid, type_t type);	//获取inod
 unsigned short* getFATList(superBlk* supblk, inode* target); //找到文件占用的块序列
 int  setCurPath(superBlk* supblk, FILE* disk, inode* curPath, Files* files, unsigned short nextDirIno); // 目录跳转
 void powerOn(FILE** disk, superBlk** supblk, inode** curPath, Files** files); //系统开机
-void createFile(superBlk* supblk, char* filename,Files* fls, type_t type, uid_t uid, gid_t gid);//创建文件
+void createFile(superBlk* supblk, Files* fls, type_t type, uid_t uid, gid_t gid,FILE* disk);//创建文件
 int freeInode(superBlk* supblk, FILE* disk, unsigned short ino); //释放占用的inode
 unsigned short getIno(Files* fls, FILE* disk, char* filename, type_t type);//遍历目录子文件列表，找到文件名对应的ino，如果没有则返回-1即0xFFFF
 void InitSys(superBlk* supblk, FILE* disk);	//初始化系统

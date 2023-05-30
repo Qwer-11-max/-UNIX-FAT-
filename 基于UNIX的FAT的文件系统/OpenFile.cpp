@@ -15,8 +15,9 @@ void OpenFile(Files* fls, FILE* disk, char* filename, type_t type,Openqueue* que
 	{
 		if (temp_ptr[i].f_ino == NULL)//如果检测到当前队列为空
 		{
-			temp_ptr[i].f_ino = temp_ino;//将文件名和其 ino 拷入队列
-			strcpy(temp_ptr[i].f_name, filename);
+			temp_ptr[i].f_ino = temp_ino;//将文件名 拷入队列
+			strcpy(temp_ptr[i].f_name, filename);//拷入ino
+			temp_ptr[i].i_type = type;//拷入type
 			check = true;//修改布尔值
 			break;
 		}

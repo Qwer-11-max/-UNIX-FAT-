@@ -65,6 +65,7 @@ typedef struct Files {
 typedef struct Openqueue {
 	char						f_name[FILENAMESIZE];	//ÎÄ¼şÃû
 	unsigned short				f_ino;		//ÎÄ¼şinodeĞòºÅ
+	type_t						i_type;   //ÎÄ¼şÀàĞÍ
 }Openqueue;
 
 //ÓÃ»§½á¹¹Ìå
@@ -108,4 +109,6 @@ bool create_user(superBlk* superBlk1, char* new_name, char* new_pwd);//´´½¨ĞÂÓÃ»
 void chdir(superBlk* supblk,FILE* disk,inode* curPath,Files* fls,Files* path); //Ä¿Â¼Ìø×ª
 void Ls(Files* fls);//Õ¹Ê¾µ±Ç°Ä¿Â¼Ëù°üº¬ÎÄ¼şÃû
 
+void OpenFile(Files* fls, FILE* disk, char* filename, type_t type, Openqueue* queue)//½«ÌØ¶¨ÎÄ¼ş¼ÓÈë´ò¿ª¶ÓÁĞ
+void CloseFile(char* filename, type_t type, Openqueue* queue);//½«ÌØ¶¨ÎÄ¼ş´Ó´ò¿ª¶ÓÁĞÉ¾³ı
 #endif

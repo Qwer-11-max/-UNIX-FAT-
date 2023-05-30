@@ -7,15 +7,15 @@
 #define BLOCKSIZE			256		//块大小,单位是BYTE
 #define INODESIZE			32		//inode大小
 #define FILENAMESIZE		14	//文件名大小
-#define CLUSTERSIZE			(4*BLOCKSIZE)	//簇大小
+#define CLUSTERSIZE			(4*BLOCKSIZE)	//簇大小   1024BYTE
 #define CLUSTERNUM			512		//簇的数量
 #define FATSIZE				512		//FAT表的大小
-#define BITMAPSIZE			(FATSIZE/16)	//位图的大小
+#define BITMAPSIZE			(FATSIZE/16)	//位图的大小   32
 #define MAXUSERS			8		//用户数量限定
-#define SUBFILENUM			(CLUSTERSIZE/(FILENAMESIZE+2))		//一个目录下文件数量限制
+#define SUBFILENUM			(CLUSTERSIZE/(FILENAMESIZE+2))		//一个目录下文件数量限制  1024/16            64
 /*磁盘划分*/
 #define SUPERBLKSIZE		2	//超级块占用两个簇
-#define INODEBLKSIZE		(INODESIZE*CLUSTERNUM/CLUSTERSIZE) //inode区占用的簇大小
+#define INODEBLKSIZE		(INODESIZE*CLUSTERNUM/CLUSTERSIZE) //inode区占用的簇大小        32*512/1024=16
 #define SYSCLUSTERSIZE		(SUPERBLKSIZE+INODEBLKSIZE) //系统保留区所占用的磁盘簇大小
 /*用户属性*/
 #define USERNAMESIZE		38 

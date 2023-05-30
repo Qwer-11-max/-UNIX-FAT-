@@ -132,6 +132,7 @@
     <ClCompile Include="creatFile.cpp" />
     <ClCompile Include="sys.cpp" />
     <ClCompile Include="源.cpp" />
+    <ClCompile Include="Ls.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="filesys.h" />

@@ -27,6 +27,12 @@
     <ClCompile Include="Ls.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="OpenFile.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="CloseFile.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="filesys.h">
@@ -35,6 +41,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="disk">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="..\..\..\..\..\Desktop\操作系统.docx">
       <Filter>资源文件</Filter>
     </None>
   </ItemGroup>

@@ -61,6 +61,12 @@ typedef struct Files {
 	unsigned					size; //×ÓÎÄ¼şÊıÁ¿
 }Files;
 
+
+typedef struct Openqueue {
+	char						f_name[FILENAMESIZE];	//ÎÄ¼şÃû
+	unsigned short				f_ino;		//ÎÄ¼şinodeĞòºÅ
+}Openqueue;
+
 //ÓÃ»§½á¹¹Ìå
 typedef struct User {
 	uid_t						uid;	//ÓÃ»§id
@@ -95,4 +101,6 @@ unsigned short getIno(Files* fls, FILE* disk, char* filename, type_t type);//±éÀ
 void InitSys(superBlk* supblk, FILE* disk);	//³õÊ¼»¯ÏµÍ³
 void mkdir(superBlk* supblk,FILE* disk, char* dirname, uid_t uid, gid_t gid, unsigned short prnt_ino);
 void Ls(Files* fls);//Õ¹Ê¾µ±Ç°Ä¿Â¼Ëù°üº¬ÎÄ¼şÃû
+void OpenFile(Files* fls, FILE* disk, char* filename, type_t type, Openqueue* queue);//ÕÒµ½ÎÄ¼ş²¢ÇÒÁĞÈë´ò¿ª¶ÓÁĞ¡£
+void CloseFile(char* filename,type_t type);//´Ó´ò¿ª¶ÓÁĞÇå³ıÎÄ¼ş
 #endif

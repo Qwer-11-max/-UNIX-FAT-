@@ -10,6 +10,8 @@ int main() {
 	superBlk* supblk = NULL; // 超级块信息
 	inode* curPath = NULL; //当前目录
 	Files* files = NULL; //当前目录的子文件列表
+	Openqueue openqueue[10] = { NULL };//文件打开队列，长度为10即最多同时打开10个文件
+
 	//模拟开机
 	powerOn(&disk, &supblk, &curPath, &files); 
 	setCurPath(supblk,disk,curPath,files,2);

@@ -129,7 +129,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CloseFile.cpp" />
     <ClCompile Include="creatFile.cpp" />
+    <ClCompile Include="OpenFile.cpp" />
     <ClCompile Include="sys.cpp" />
     <ClCompile Include="源.cpp" />
     <ClCompile Include="Ls.cpp" />
@@ -138,6 +140,7 @@
     <ClInclude Include="filesys.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\..\Desktop\操作系统.docx" />
     <None Include="disk" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

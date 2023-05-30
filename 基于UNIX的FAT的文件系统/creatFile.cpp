@@ -4,7 +4,7 @@
 
 using namespace std;
 
-void createFile(superBlk* supblk, Files * fls, type_t type, uid_t uid, gid_t gid,FILE* disk)//文件创建函数，需求的键盘输入,有文件名、文件类型；
+void creatFile(superBlk* supblk, Files * fls, type_t type, uid_t uid, gid_t gid,FILE* disk)//文件创建函数，需求的键盘输入,有文件名、文件类型；
 {
 	char filename[FILENAMESIZE];//定义临时文件名变量
 	int FileType;//定义临时文件类型变量

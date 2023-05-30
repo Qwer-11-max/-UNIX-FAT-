@@ -90,6 +90,7 @@ unsigned short* getFATList(superBlk* supblk, inode* target); //ÕÒµ½ÎÄ¼şÕ¼ÓÃµÄ¿éĞ
 int  setCurPath(superBlk* supblk, FILE* disk, inode* curPath, Files* files, unsigned short nextDirIno); // Ä¿Â¼Ìø×ª
 void powerOn(FILE** disk, superBlk** supblk, inode** curPath, Files** files); //ÏµÍ³¿ª»ú
 void createFile(superBlk* supblk, char* filename,Files* fls, type_t type, uid_t uid, gid_t gid);//´´½¨ÎÄ¼ş
+int freeInode(superBlk* supblk, FILE* disk, unsigned short ino); //ÊÍ·ÅÕ¼ÓÃµÄinode
 unsigned short getIno(Files* fls, FILE* disk, char* filename, type_t type);//±éÀúÄ¿Â¼×ÓÎÄ¼şÁĞ±í£¬ÕÒµ½ÎÄ¼şÃû¶ÔÓ¦µÄino£¬Èç¹ûÃ»ÓĞÔò·µ»Ø-1¼´0xFFFF
 void InitSys(superBlk* supblk, FILE* disk);	//³õÊ¼»¯ÏµÍ³
 void mkdir(superBlk* supblk,FILE* disk, char* dirname, uid_t uid, gid_t gid, unsigned short prnt_ino);

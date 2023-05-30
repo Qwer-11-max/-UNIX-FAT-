@@ -129,6 +129,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="creatFile.cpp" />
     <ClCompile Include="sys.cpp" />
     <ClCompile Include="源.cpp" />
   </ItemGroup>

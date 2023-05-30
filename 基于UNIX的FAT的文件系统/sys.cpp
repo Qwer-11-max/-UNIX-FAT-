@@ -113,41 +113,41 @@ unsigned short getIno(Files* fls,FILE* disk, char* filename,type_t type) {
 	//不存在这个文件则返回-1
 	return -1;
 }
-//
-//创建文件
-void createFile(superBlk* supblk,char * filename,type_t type,uid_t uid,gid_t gid){
-
-}
-//创建目录
-void mkdir(superBlk* supblk,FILE* disk,char* dirname,uid_t uid,gid_t gid,unsigned short prnt_ino) {
-	//存储目录信息
-	file temp;
-	//文件名
-	strcat(temp.f_name, dirname);
-	//为新目录申请inode
-	inode* dirInode = getInode(supblk, uid, gid, DIR);
-	//记录目录的ino
-	temp.f_ino = dirInode->i_ino;
-	
-	//找到父目录的inode并读取
-	inode* prnt_inode = (inode*)malloc(sizeof(inode));
-	if (!prnt_inode) {
-		printf("索引节点分配失败");
-		exit(0);
+//释放inode节点
+int freeInode(superBlk* supblk, FILE* disk, unsigned short ino) {
+	//读取inode信息
+	inode target = {NULL};
+	fseek(disk, CLUSTERSIZE * SUPERBLKSIZE + ino * INODESIZE, SEEK_SET);
+	fread(&target, sizeof(inode), 1, disk);
+	//判断inode是否存在
+	if (target.i_size == 0) {
+		printf("要释放的inode节点不存在");
+		return 0;
 	}
-	//找到父目录的inode并读取
-	fseek(disk,SUPERBLKSIZE*CLUSTERSIZE+prnt_ino*INODESIZE,SEEK_SET);
-	fread(prnt_inode, sizeof(inode), 1, disk);
+	//释放占用的数据块
+	unsigned short data[CLUSTERSIZE / sizeof(unsigned short)] = {0};
+	unsigned short* FATList = getFATList(supblk, &target);
+	for (int i = 0; i < target.i_blkCnt; i++) {
+		supblk->FAT[FATList[i]] = 0;
+		fseek(disk, CLUSTERSIZE * SYSCLUSTERSIZE + FATList[i] * CLUSTERSIZE, SEEK_SET);
+		fwrite(data,sizeof(unsigned short),CLUSTERSIZE / sizeof(unsigned short),disk);
+	}
+	//释放占用的inode块
+	unsigned short data1[INODESIZE / sizeof(unsigned short)] = { 0 };
+	fseek(disk, CLUSTERSIZE * SUPERBLKSIZE + ino * INODESIZE, SEEK_SET);
+	fwrite(data1, sizeof(unsigned short), INODESIZE / sizeof(unsigned), disk);
 
-	//找到父目录的数据块所在地并将目录信息写入
-	fseek(disk, prnt_inode->i_addr * CLUSTERSIZE, SEEK_SET);
-	fwrite(&temp, sizeof(file), 1, disk);
-
-	//释放无用指针
-	free(dirInode);
-	free(prnt_inode);
+	//更新超级块信息
+	supblk->free_blk += target.i_blkCnt;
+	supblk->free_disk += target.i_size;
+	supblk->inode_free += 1;
+	
+	int row = ino / 16; // 重置inode位图的信息
+	int loc = ino % 16;
+	SetOne(supblk->bitmap_inode[row], loc);
+	//inode节点释放完毕
+	return 0;
 }
-
 //初始化文件系统
 void InitSys(superBlk *supblk,FILE* disk) {
 	//初始化用户,创建root用户

@@ -21,6 +21,9 @@
     <ClCompile Include="sys.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="creatFile.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="filesys.h">

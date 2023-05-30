@@ -16,7 +16,7 @@ void createFile(superBlk* supblk, Files * fls, type_t type, uid_t uid, gid_t gid
 	cout << "please putin FlieType  (1:txt/0:dir)" << endl;//输出提示
 	cin >> FileType;//键盘输入文件类型
 	
-	check = GetIno(filename);//调用查询函数，如果有同名同类型文件，则返回该文件ino；如果无同名文件则返回 -1
+	check = getIno(filename);//调用查询函数，如果有同名同类型文件，则返回该文件ino；如果无同名文件则返回 -1
 	if (check != -1)//如果标志位不是-1，即有同名文件
 	{
 		cout << "there's something wrong,FileName has been used" << endl;

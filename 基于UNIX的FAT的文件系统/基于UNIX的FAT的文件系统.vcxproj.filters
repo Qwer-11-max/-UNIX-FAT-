@@ -30,10 +30,13 @@
     <ClCompile Include="login.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="OpenFile.cpp">
+    <ClCompile Include="CloseFile.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="CloseFile.cpp">
+    <ClCompile Include="Ls.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenFile.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -68,7 +68,7 @@ typedef struct Files {
 typedef struct WholeName {
 	char						f_name[FILENAMESIZE];	//文件名
 	type_t						i_type;   //文件类型
-};
+}WholeName;
 
 typedef struct Openqueue {
 	char						f_name[FILENAMESIZE];	//文件名

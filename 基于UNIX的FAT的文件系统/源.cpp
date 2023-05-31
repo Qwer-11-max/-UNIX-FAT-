@@ -17,11 +17,10 @@ int main() {
 	//登录
 	while (1) {
 		mainWindows(supblk, disk, curPath, NULL, files, path);
-		//system("cls");
 	}
 	fclose(disk);
 
-	////创建一个磁盘
+	/*创建一个磁盘*/
 	//FILE* disk;
 	//disk = fopen("disk","w");
 	//unsigned short data[256 * 1024] = { 0 };

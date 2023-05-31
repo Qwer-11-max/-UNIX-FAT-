@@ -8,13 +8,12 @@
 void chdir(superBlk* supblk, FILE* disk, inode* curPath, Files* fls, Files* path) {
 	//输入新的文件夹名
 	char filename[FILENAMESIZE] = "\0";
-	printf("输入文件名");
 	scanf("%s", filename);
 	if (strcmp(filename, "..")) {
 		//判断文件夹是否存在
 		unsigned short nextIno = getIno(fls, disk, filename, DIR);
 		if (nextIno == 0xffff) {
-			printf("该目录不存在");
+			printf("该目录不存在\n");
 			return;
 		}
 		//跳转到新的目录
@@ -25,7 +24,7 @@ void chdir(superBlk* supblk, FILE* disk, inode* curPath, Files* fls, Files* path
 		path->size += 1;
 	}
 	else {
-		setCurPath(supblk, disk, curPath, fls, path->file[path->size-1].f_ino);
+		setCurPath(supblk, disk, curPath, fls, path->file[path->size-2].f_ino);
 		//更新路径信息
 		path->size -= 1;
 	}
@@ -35,7 +34,6 @@ void chdir(superBlk* supblk, FILE* disk, inode* curPath, Files* fls, Files* path
 void mkdir(superBlk* supblk, FILE* disk, Files* fls) {
 	//输入子目录名
 	char filename[FILENAMESIZE];
-	printf("请输入子目录名");
 	scanf("%s", filename);
 	//判断目录是否存在
 	unsigned short ino = getIno(fls, disk, filename, DIR);
@@ -48,9 +46,9 @@ void mkdir(superBlk* supblk, FILE* disk, Files* fls) {
 				break;
 			}
 		}
-		printf("目录创建成功");
+		printf("目录创建成功\n");
 	}
 	else { // 存在则打印错误信息
-		printf("该目录已存在");
+		printf("该目录已存在\n");
 	}
 }

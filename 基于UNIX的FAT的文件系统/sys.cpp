@@ -118,7 +118,7 @@ int  setCurPath(superBlk* supblk, FILE* disk, inode* curPath, Files* fls, unsign
 	fseek(disk, SYSCLUSTERSIZE * CLUSTERSIZE + curPath->i_addr * CLUSTERSIZE, SEEK_SET);
 	for (int i = 0; i < SUBFILENUM; i++) {
 		if (fls->file[i].f_name[0] !='\0') {
-			fwrite(&fls->file, sizeof(file), 1, disk);
+			fwrite(&fls->file[i], sizeof(file), 1, disk);
 			fseek(disk,sizeof(file), SEEK_CUR);
 		}
 	}
@@ -204,21 +204,18 @@ void InitSys(superBlk *supblk,FILE* disk) {
 	supblk->disk_size = 524288;
 	supblk->free_blk = 493;
 	supblk->free_disk = 504832;
-	supblk->inode_count = 1;
-	supblk->inode_free = 511;
+	supblk->inode_count = 0;
+	supblk->inode_free = 512;
 	//初始化空闲inode位图
 	for (int i = 0; i < BITMAPSIZE; i++) {
 		supblk->bitmap_inode[i] = 0;
 	}
 	//创建根目录
 	inode* root = getInode(supblk, 0, 0, DIR);
-	file rot;
-	rot.f_ino = root->i_ino;
-	strcpy(rot.f_name, "..");
 	//初始化根目录
 	supblk->root_ino = root->i_ino;
 	//将根目录inode数据写入磁盘
-	fseek(disk, CLUSTERSIZE * 2, SEEK_SET);
+	fseek(disk, CLUSTERSIZE * 2 + root->i_ino*INODESIZE, SEEK_SET);
 	fwrite(root, sizeof(inode), 1, disk);
 	//创建基础的二级目录,并将父目录写入到子目录的第一个条目中
 	file dir_buf[3] = {};
@@ -232,13 +229,8 @@ void InitSys(superBlk *supblk,FILE* disk) {
 	inode* etc = getInode(supblk, 0, 0, DIR);
 	fseek(disk, SUPERBLKSIZE * CLUSTERSIZE + dots->i_ino * INODESIZE, SEEK_SET);
 	fwrite(dots, sizeof(inode), 1, disk);
-	fseek(disk, SYSCLUSTERSIZE * CLUSTERSIZE + dots->i_addr * CLUSTERSIZE, SEEK_SET);
-	fwrite(&rot, sizeof(file), 1, disk);
 	fseek(disk, SUPERBLKSIZE * CLUSTERSIZE + etc->i_ino * INODESIZE, SEEK_SET);
 	fwrite(etc, sizeof(inode), 1, disk);
-	fseek(disk, SYSCLUSTERSIZE * CLUSTERSIZE + etc->i_addr * CLUSTERSIZE, SEEK_SET);
-	fwrite(&rot, sizeof(file), 1, disk);
-	
 	free(etc);
 	free(dots);
 	//将二级目录写入到根目录下
@@ -299,6 +291,13 @@ void powerOn(FILE** disk, superBlk** supblk, inode** curPath, Files** fls,Files*
 	}
 	free(FATList);
 }
+//系统停机
+void halt(superBlk* supblk,FILE* disk) {
+	fseek(disk, 0, SEEK_SET);
+	//保存超级块信息
+	fwrite(supblk,sizeof(superBlk),1,disk);
+	printf("系统关机成功\n");
+}
 
 //主界面
 void mainWindows(superBlk* supblk, FILE* disk, inode* curPath, User* curUser, Files* fls,Files* path) {
@@ -314,20 +313,31 @@ void mainWindows(superBlk* supblk, FILE* disk, inode* curPath, User* curUser, Fi
 		printf("\\%s", path->file[i].f_name);
 	}
 	printf(">");
-	int choice;
-	scanf("%d", &choice);
+	char instr[20];
+	scanf("%s",instr);
 
-	switch (choice) {
-	case 1:creatFile(supblk, disk, fls, 0, 0);
-		break;
-	case 2:
-		break;
-	case 3:chdir(supblk, disk, curPath, fls, path);
-		break;
-	case 4:mkdir(supblk, disk, fls);
-		break;
-	case 5:Ls(fls);
-		break;
-	default:break;
+	if(!strcmp(instr,"cd")){
+		chdir(supblk, disk, curPath, fls, path);
 	}
+	else if (!strcmp(instr, "mkdir")) {
+		mkdir(supblk, disk, fls);
+	}
+	else if (!strcmp(instr, "touch")) {
+		creatFile(supblk, disk, fls, 0, 0);
+	}
+	else if (!strcmp(instr, "ls")) {
+		Ls(fls);
+	}
+	else if (!strcmp(instr, "cls")) {
+		system("cls");
+	}
+	else if (!(strcmp(instr, "exit"))) {
+		halt(supblk,disk);
+		exit(0);
+	}
+	else {
+		printf("不存在该指令:%s", instr);
+	}
+
+	fflush(stdin);
 }

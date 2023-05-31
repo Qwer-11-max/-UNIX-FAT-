@@ -105,7 +105,7 @@ void allocBlk(superBlk* supblk, inode* target, unsigned short size); //ÎªÎÄ¼þ·ÖÅ
 void mainWindows(superBlk* supblk, FILE* disk, inode* curPath, User* curUser, Files* fls, Files* path); //ÏµÍ³×Ó½çÃæ
 void powerOn(FILE** disk, superBlk** supblk, inode** curPath, Files** files, Files** path); //ÏµÍ³¿ª»ú
 void InitSys(superBlk* supblk, FILE* disk);	//³õÊ¼»¯ÏµÍ³
-
+void halt(superBlk* supblk,FILE* disk); //ÏµÍ³Í£»ú
 /*Ä¿Â¼Àà*/
 void mkdir(superBlk* supblk, FILE* disk, Files* fls);//´´½¨Ä¿Â¼
 void Ls(Files* fls);//Õ¹Ê¾µ±Ç°Ä¿Â¼Ëù°üº¬ÎÄ¼þÃû

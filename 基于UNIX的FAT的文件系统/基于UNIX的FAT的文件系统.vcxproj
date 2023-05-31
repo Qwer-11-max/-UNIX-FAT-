@@ -129,6 +129,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Split.cpp" />
     <ClCompile Include="CloseFile.cpp" />
     <ClCompile Include="creatFile.cpp" />
     <ClCompile Include="dir.cpp" />

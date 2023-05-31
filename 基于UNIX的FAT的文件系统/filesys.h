@@ -7,6 +7,8 @@
 #define BLOCKSIZE			256		//块大小,单位是BYTE
 #define INODESIZE			32		//inode大小
 #define FILENAMESIZE		14	//文件名大小
+#define FILETYPESIZE		9   //文件后缀最大长度
+#define WHOLEFILENAMESIZE   50  //文件全名极限大小
 #define CLUSTERSIZE			(4*BLOCKSIZE)	//簇大小   1024BYTE
 #define CLUSTERNUM			512		//簇的数量
 #define FATSIZE				512		//FAT表的大小
@@ -30,6 +32,8 @@
 #define UNDELETE			0x10 //选择时不可删除，默认可以删除
 #define LIST				0X11 //选择时可以列表
 /*文件类型*/
+#define C					0x03 //.c文件
+#define DEFAULT             0x02 //默认文件类型
 #define TXT					0x01 //txt文件
 #define DIR					0x00 //目录文件
 
@@ -61,6 +65,10 @@ typedef struct Files {
 	unsigned					size; //子文件数量
 }Files;
 
+typedef struct WholeName {
+	char						f_name[FILENAMESIZE];	//文件名
+	type_t						i_type;   //文件类型
+};
 
 typedef struct Openqueue {
 	char						f_name[FILENAMESIZE];	//文件名
@@ -98,6 +106,7 @@ int  setCurPath(superBlk* supblk, FILE* disk, inode* curPath, Files* fls, unsign
 int freeInode(superBlk* supblk, FILE* disk, unsigned short ino); //释放占用的inode
 unsigned short getIno(Files* fls, FILE* disk, char* filename, type_t type);//遍历目录子文件列表，找到文件名对应的ino，如果没有则返回-1即0xFFFF
 void allocBlk(superBlk* supblk, inode* target, unsigned short size); //为文件分配额外的空间
+void Split(WholeName* wholename,char* wholefilename);//拆分输入信息函数
 
 
 /*=================功能模块=======================*/

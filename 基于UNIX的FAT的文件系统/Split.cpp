@@ -2,14 +2,14 @@
 #include<IOSTREAM>
 #include<string.h>
 using namespace std;
-void Split(WholeName* wholename, char* wholefilename)//ĞèÇó²ÎÊıÎª½á¹¹ÌåÖ¸Õë£¬ÒÔ¼°´æ·ÅÕû¸öÎÄ¼şÃûµÄ×Ö·ûÊı×éÖ¸Õë
+void Split(WholeName* wholename, char* wholefilename)//ĞèÇó²ÎÊıÎª½á¹¹ÌåÖ¸Õë£¬ÒÔ¼°´æ·ÅÕû¸öÎÄ¼şÃûµÄ×Ö·ûÊı×éÖ¸Õë           //×¢Ã÷£¬Î´¶Ô·Ç·¨×´Ì¬ÏÂÊı¾İ½á¹¹ÄÚµÄÖµ×ĞÏ¸ÍÆÇÃ
 {
 	WholeName* temp_ptr = wholename;//½¨Á¢ÁÙÊ±Ö¸Õë³ĞÔØ´«ÈëµÄ²ÎÊıÖ¸Õë
 	int length;//ÊäÈëµÄÎÄ¼şÈ«Ãû³¤¶È
 	int location;//ÎÄ¼şÃûÖĞ×îºóÒ»¸ö¡®.¡¯µÄÎ»ÖÃ
 	bool check = false;//²¼¶û±äÁ¿±íÊ¾ÊÇ·ñËÑË÷µ½'.'
 	char temp_type[FILETYPESIZE] = {NULL};//ÁÙÊ±´æ·ÅÎÄ¼şºó×ºÉè¶¨ÎÄ¼şºó×º³¤¶ÈÎª9£¬³¬¹ı´Ë³¤¶È·Ç·¨£¬
-	length = strlen(wholefilename);//¼ì²âÊäÈëµÄ×Ö·ûÊı×é³¤¶È£»                 !!!!!!!!!!!!!!wholefilename[WHOLEFILENAMESIZE]Ò»¶¨Òª³õÊ¼»¯ÔÙ¸³Öµ²»È»´ËĞĞ»á³ö´í£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡
+	length = strlen(wholefilename);//¼ì²âÊäÈëµÄ×Ö·ûÊı×é³¤¶È£»                 
 
 	for (int i = length - 1;i >= 0;i--)//µ¹Ñ­»·ÓÃÓÚÅĞ¶Ï×îºóÒ»¸ö¡°.¡±µÄÎ»ÖÃ
 	{
@@ -42,6 +42,7 @@ void Split(WholeName* wholename, char* wholefilename)//ĞèÇó²ÎÊıÎª½á¹¹ÌåÖ¸Õë£¬ÒÔ¼
 		{
 			for (int i = 0;i < location;i++)//²ğ·Ö´æ´¢
 				temp_ptr->f_name[i] = wholefilename[i];
+			temp_ptr->f_name[location] = '\0';
 			for (int i = location + 1;i < length;i++)
 				temp_type[i] = wholefilename[i];
 		//½ÓÏÂÀ´ÊÇ±È½Ï×Ö·û´®²¢ÇÒ¸ø½á¹¹Ìå¸³Öµ
@@ -70,6 +71,7 @@ void Split(WholeName* wholename, char* wholefilename)//ĞèÇó²ÎÊıÎª½á¹¹ÌåÖ¸Õë£¬ÒÔ¼
 		{
 			for (int i = 0;i < length;i++)
 				temp_ptr->f_name[i] = wholefilename[i];
+			temp_ptr->f_name[length] = '\0';
 			temp_ptr->i_type = DEFAULT;
 			return;
 		}

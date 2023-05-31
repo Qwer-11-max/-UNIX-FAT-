@@ -10,10 +10,10 @@ void CloseFile(char* filename, type_t type, Openqueue* queue)
 	Openqueue* temp_ptr = queue;
 	for (i = 0;i < 10;i++)
 	{
-		if (temp_ptr[i].f_name = filename && temp_ptr[i].i_type = type)//如果输入的名与类型皆与表中相同
+		if (!strcmp(temp_ptr->f_name,filename) && temp_ptr[i].i_type == type)//如果输入的名与类型皆与表中相同
 		{
 			temp_ptr[i].f_ino = NULL;
-			temp_ptr[i].f_name = NULL;
+			temp_ptr[i].f_name[0] = '\0';
 			temp_ptr[i].i_type = NULL;
 			check = true;
 			return;

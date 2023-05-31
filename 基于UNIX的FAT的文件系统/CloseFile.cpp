@@ -19,9 +19,8 @@ void CloseFile(char* filename, type_t type, Openqueue* queue)
 			return;
 		}
 		else continue;
-		i = i + 1;
 	}
-	if (check = true)
+	if (check == true)
 		cout << "successful close" << endl;
 	else
 		cout << "失败，文件名可能存在错误" << endl;

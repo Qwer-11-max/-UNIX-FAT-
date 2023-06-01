@@ -346,7 +346,7 @@ bool mainWindows(superBlk* supblk, FILE* disk, inode* curPath, User* curUser, Fi
 	else if (!strcmp(instr, "createUser")) {
 		create_user(supblk);
 	}
-	else if (!strcmp(instr, "writeFile")) {
+	else if (!strcmp(instr, "write")) {
 		writeFile(supblk, disk, queue);
 	}
 	else if (!strcmp(instr, "logout")) {
@@ -354,6 +354,9 @@ bool mainWindows(superBlk* supblk, FILE* disk, inode* curPath, User* curUser, Fi
 	}
 	else if (!strcmp(instr, "rmdir")) {
 		rmdir(supblk, disk, fls);
+	}
+	else if (!strcmp(instr, "read")) {
+		readFile(supblk, disk, queue);
 	}
 	else {
 		printf("不存在该指令:%s\n", instr);

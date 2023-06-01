@@ -128,7 +128,7 @@ void creatFile(superBlk* supblk, FILE* disk, Files* fls, uid_t uid, gid_t gid);/
 void OpenFile(Files* fls, FILE* disk, Openqueue* queue);//将特定文件加入打开队列
 void CloseFile(Openqueue* queue);//将特定文件从打开队列删除
 void deleteFile(superBlk* supblk, FILE* disk, Files* fls); //删除文件
-void readFile(); //从文件中读数据
+void readFile(superBlk* supblk, FILE* disk, Openqueue* queue); //从文件中读数据
 void writeFile(superBlk* supblk,FILE* disk,Openqueue* queue);//向文件中写数据
 
 /*用户类*/

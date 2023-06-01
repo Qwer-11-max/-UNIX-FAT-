@@ -54,5 +54,5 @@ void writeFile(superBlk* supblk, FILE* disk, Openqueue* queue) {
 		b += blkRest;
 	}
 	//写文件成功
-	cout << "文件写入成功";
+	cout << "文件写入成功\n";
 }

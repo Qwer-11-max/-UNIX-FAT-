@@ -44,7 +44,7 @@ void allocBlk(superBlk* supblk, inode* target, unsigned short size) {
 	free(FATList);
 }
 //分配inode节点
-inode *getInode(superBlk *supblk,uid_t uid, gid_t gid,type_t type) {
+inode *getInode(superBlk *supblk,FILE* disk,uid_t uid, gid_t gid,type_t type) {
 	inode* temp = (inode*)malloc(sizeof(inode));
 	if (!temp) {
 		printf("创建新的inode节点失败\n");
@@ -85,6 +85,10 @@ inode *getInode(superBlk *supblk,uid_t uid, gid_t gid,type_t type) {
 	}
 	supblk->inode_count += 1;
 	supblk->inode_free -= 1;
+
+	//将inode信息保存到磁盘上
+	fseek(disk, SUPERBLKSIZE * CLUSTERSIZE + temp->i_ino * INODESIZE, SEEK_SET);
+	fwrite(temp, sizeof(inode), 1, disk);
 	return temp;
 }
 //找到文件占用的块序列
@@ -107,27 +111,25 @@ unsigned short* getFATList(superBlk * supblk,inode* target) {
 // 目录跳转
 int  setCurPath(superBlk* supblk, FILE* disk, inode* curPath, Files* fls, unsigned short nextDirIno) {
 	//保存旧目录信息
-	int curPoint = 0;
-	unsigned short data[CLUSTERSIZE / sizeof(unsigned)] = {0};
-	//更新当前目录的inode节点信息
+	//1.保存旧目录inode信息
 	fseek(disk, SUPERBLKSIZE * CLUSTERSIZE + curPath->i_ino * INODESIZE, SEEK_SET);
 	fwrite(curPath, sizeof(inode), 1, disk);
-	//将磁盘中的旧目录数据抹除
+	//2.将磁盘中的旧目录数据抹除
+	unsigned short data[CLUSTERSIZE / sizeof(unsigned)] = { 0 };
 	fseek(disk, SYSCLUSTERSIZE * CLUSTERSIZE + curPath->i_addr * CLUSTERSIZE,SEEK_SET);
 	fwrite(data, sizeof(unsigned short), CLUSTERSIZE / sizeof(unsigned), disk);
-	//写入旧的目录信息
+	//3.写入当前目录的目录信息
 	fseek(disk, SYSCLUSTERSIZE * CLUSTERSIZE + curPath->i_addr * CLUSTERSIZE, SEEK_SET);
 	for (int i = 0; i < SUBFILENUM; i++) {
 		if (fls->file[i].f_name[0] !='\0') {
 			fwrite(&fls->file[i], sizeof(file), 1, disk);
-			fseek(disk,sizeof(file), SEEK_CUR);
 		}
 	}
 	//读取新目录信息
 	//1.读取inode
 	fseek(disk, SUPERBLKSIZE * CLUSTERSIZE + nextDirIno * INODESIZE, SEEK_SET);
 	fread(curPath, sizeof(inode), 1, disk);
-	//2.读取子文件
+	//2.读取子文件列表
 	fseek(disk, SYSCLUSTERSIZE * CLUSTERSIZE + curPath->i_addr * CLUSTERSIZE, SEEK_SET);
 	fread(fls, sizeof(Files), 1, disk);
 	return 0;
@@ -207,7 +209,7 @@ void InitSys(superBlk *supblk,FILE* disk) {
 		supblk->bitmap_inode[i] = 0;
 	}
 	//创建根目录
-	inode* root = getInode(supblk, 0, 0, DIR);
+	inode* root = getInode(supblk,disk, 0, 0, DIR);
 	//初始化根目录
 	supblk->root_ino = root->i_ino;
 	//将根目录inode数据写入磁盘
@@ -221,8 +223,8 @@ void InitSys(superBlk *supblk,FILE* disk) {
 	dir_buf[1].f_ino = 1;
 	strcpy(dir_buf[2].f_name, "etc");
 	dir_buf[2].f_ino = 2;
-	inode* dots = getInode(supblk, 0, 0, DIR);
-	inode* etc = getInode(supblk, 0, 0, DIR);
+	inode* dots = getInode(supblk,disk, 0, 0, DIR);
+	inode* etc = getInode(supblk,disk, 0, 0, DIR);
 	fseek(disk, SUPERBLKSIZE * CLUSTERSIZE + dots->i_ino * INODESIZE, SEEK_SET);
 	fwrite(dots, sizeof(inode), 1, disk);
 	fseek(disk, SUPERBLKSIZE * CLUSTERSIZE + etc->i_ino * INODESIZE, SEEK_SET);
@@ -292,12 +294,7 @@ void halt(superBlk* supblk,FILE* disk,inode* curPath,Files* fls) {
 	//保存超级块信息
 	fwrite(supblk,sizeof(superBlk),1,disk);
 	//保存当前目录信息
-	//1.保存inode
-	fseek(disk, SUPERBLKSIZE * CLUSTERSIZE + curPath->i_ino * INODESIZE, SEEK_SET);
-	fwrite(curPath, sizeof(inode), 1, disk);
-	//2.保存子目录
-	fseek(disk, SYSCLUSTERSIZE * CLUSTERSIZE + curPath->i_addr * CLUSTERSIZE, SEEK_SET);
-	fwrite(fls, sizeof(Files), 1, disk);
+	setCurPath(supblk, disk, curPath, fls, curPath->i_ino);
 	printf("系统关机成功\n");
 }
 
@@ -354,6 +351,9 @@ bool mainWindows(superBlk* supblk, FILE* disk, inode* curPath, User* curUser, Fi
 	}
 	else if (!strcmp(instr, "logout")) {
 		return false;
+	}
+	else if (!strcmp(instr, "rmdir")) {
+		rmdir(supblk, disk, fls);
 	}
 	else {
 		printf("不存在该指令:%s\n", instr);

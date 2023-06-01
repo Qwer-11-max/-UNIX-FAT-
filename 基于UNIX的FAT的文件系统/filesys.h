@@ -101,7 +101,7 @@ typedef struct superBlk {
 }superBlk;
 
 /*=================通用模块=======================*/
-inode* getInode(superBlk* supblk, uid_t uid, gid_t gid, type_t type);	//获取inode节点
+inode* getInode(superBlk* supblk,FILE* disk, uid_t uid, gid_t gid, type_t type);	//获取inode节点
 unsigned short* getFATList(superBlk* supblk, inode* target); //找到文件占用的块序列
 int  setCurPath(superBlk* supblk, FILE* disk, inode* curPath, Files* fls, unsigned short nextDirIno); // 目录跳转
 int freeInode(superBlk* supblk, FILE* disk, unsigned short ino); //释放占用的inode
@@ -121,6 +121,7 @@ void halt(superBlk* supblk, FILE* disk, inode* curPath, Files* fls); //系统停机
 void mkdir(superBlk* supblk, FILE* disk, Files* fls);//创建目录
 void Ls(Files* fls);//展示当前目录所包含文件名
 void chdir(superBlk* supblk, FILE* disk, inode* curPath, Files* fls, Files* path); //目录跳转
+void rmdir(superBlk* supblk, FILE* disk,Files* fls); //删除目录
 
 /*文件类*/
 void creatFile(superBlk* supblk, FILE* disk, Files* fls, uid_t uid, gid_t gid);//创建文件

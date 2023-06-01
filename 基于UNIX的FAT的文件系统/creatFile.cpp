@@ -26,9 +26,7 @@ void creatFile(superBlk* supblk,FILE* disk,Files* fls,uid_t uid,gid_t gid)//马文
 	else //否则创建新文件
 	{
 		//获取新inode
-		inode* temp = getInode(supblk, uid, gid, type);
-		fseek(disk, SUPERBLKSIZE * CLUSTERSIZE + temp->i_ino * INODESIZE, SEEK_SET);
-		fwrite(temp, sizeof(inode), 1, disk);
+		inode* temp = getInode(supblk,disk, uid, gid, type);
 		//将文件名和ino写入fls
 		for (int i = 0; i < SUBFILENUM; i++) {
 			if (fls->file[i].f_name[0] == '\0') {
@@ -37,6 +35,7 @@ void creatFile(superBlk* supblk,FILE* disk,Files* fls,uid_t uid,gid_t gid)//马文
 				break;
 			}
 		}
+		free(temp);
 		cout << "creating success" << endl;
 	}
 	return;

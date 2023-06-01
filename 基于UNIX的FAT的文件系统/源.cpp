@@ -10,14 +10,14 @@ int main() {
 	superBlk* supblk = NULL; // 超级块信息
 	inode* curPath = NULL; //当前目录
 	Files* files = NULL; //当前目录的子文件列表
-	Openqueue* Openqueue[10] = { NULL };//队列打开文件列表
+	Openqueue Openqueue[10] = { NULL };//队列打开文件列表
 	WholeName* wholename = NULL;//文件完整名结构体
 	Files* path = NULL;
 	//模拟开机
 	powerOn(&disk, &supblk, &curPath, &files,&path); 
 	//登录
 	while (1) {
-		mainWindows(supblk, disk, curPath, NULL, files, path);
+		mainWindows(supblk, disk, curPath, NULL, files, path,Openqueue);
 	}
 	fclose(disk);
 

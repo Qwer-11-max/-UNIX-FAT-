@@ -5,8 +5,11 @@
 
 using namespace std;
 
-void OpenFile(Files* fls, FILE* disk, char* filename, type_t type,Openqueue* queue)//将特定文件加入打开队列
+void OpenFile(Files* fls, FILE* disk,Openqueue* queue)//将特定文件加入打开队列
 {	
+	char filename[FILENAMESIZE] = "\0";
+	cin >> filename;
+	type_t type = Split(filename);
 	int i = 0;//用于循环
 	bool check = false;//用于判断是否成功存入
 	unsigned short loc;//临时指针

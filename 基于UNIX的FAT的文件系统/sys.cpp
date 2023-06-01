@@ -302,7 +302,7 @@ void halt(superBlk* supblk,FILE* disk,inode* curPath,Files* fls) {
 }
 
 //主界面
-void mainWindows(superBlk* supblk, FILE* disk, inode* curPath, User* curUser, Files* fls,Files* path) {
+void mainWindows(superBlk* supblk, FILE* disk, inode* curPath, User* curUser, Files* fls,Files* path,Openqueue* queue) {
 	//printf("系统剩余资源资源一览:\n");
 	//printf("================================================================================================\n");
 	//printf("| 磁盘大小：%10d Byte\t| 磁盘剩余空间: %10d Byte\t| 磁盘剩余inode数量：%10d|\n", supblk->disk_size, supblk->free_disk, supblk->inode_free);
@@ -310,7 +310,7 @@ void mainWindows(superBlk* supblk, FILE* disk, inode* curPath, User* curUser, Fi
 	//printf("================================================================================================\n");
 	//printf("功能列表:\n");
 	//printf("1.创建文件\n2.删除文件\n3.跳转目录\n4.创建目录\n5.列出当前目录子文件列表\n");
-	printf("<root@0>  C:");
+	printf("<%s@%06d>  C:","root",0);
 	for (int i = 0; i < path->size; i++) {
 		printf("\\%s", path->file[i].f_name);
 	}
@@ -339,6 +339,9 @@ void mainWindows(superBlk* supblk, FILE* disk, inode* curPath, User* curUser, Fi
 	}
 	else if (!strcmp(instr, "del")) {
 		deleteFile(supblk, disk, fls);
+	}
+	else if (!strcmp(instr, "open")) {
+		OpenFile(fls, disk, queue);
 	}
 	else {
 		printf("不存在该指令:%s\n", instr);

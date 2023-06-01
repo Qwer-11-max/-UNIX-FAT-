@@ -112,7 +112,7 @@ type_t Split(char* wholefilename);//拆分输入信息函数
 
 /*=================功能模块=======================*/
 /*系统类*/
-void mainWindows(superBlk* supblk, FILE* disk, inode* curPath, User* curUser, Files* fls, Files* path); //系统子界面
+void mainWindows(superBlk* supblk, FILE* disk, inode* curPath, User* curUser, Files* fls, Files* path,Openqueue* queue); //系统子界面
 void powerOn(FILE** disk, superBlk** supblk, inode** curPath, Files** files, Files** path); //系统开机
 void InitSys(superBlk* supblk, FILE* disk);	//初始化系统
 void halt(superBlk* supblk, FILE* disk, inode* curPath, Files* fls); //系统停机
@@ -124,7 +124,7 @@ void chdir(superBlk* supblk, FILE* disk, inode* curPath, Files* fls, Files* path
 
 /*文件类*/
 void creatFile(superBlk* supblk, FILE* disk, Files* fls, uid_t uid, gid_t gid);//创建文件
-void OpenFile(Files* fls, FILE* disk, char* filename, type_t type, Openqueue* queue);//将特定文件加入打开队列
+void OpenFile(Files* fls, FILE* disk, Openqueue* queue);//将特定文件加入打开队列
 void CloseFile(char* filename, type_t type, Openqueue* queue);//将特定文件从打开队列删除
 void deleteFile(superBlk* supblk, FILE* disk, Files* fls); //删除文件
 void readFile();

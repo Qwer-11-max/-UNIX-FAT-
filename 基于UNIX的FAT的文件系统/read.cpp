@@ -33,5 +33,5 @@ void writeFile(superBlk* supblk, FILE* disk, Openqueue* queue) {
     blknum++;
   }
   cout<<"文件读取成功"<<endl;
-  delete buf；
+  delete buf;
 }

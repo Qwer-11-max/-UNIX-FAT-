@@ -343,6 +343,9 @@ void mainWindows(superBlk* supblk, FILE* disk, inode* curPath, User* curUser, Fi
 	else if (!strcmp(instr, "open")) {
 		OpenFile(fls, disk, queue);
 	}
+	else if (!strcmp(instr, "close")) {
+		CloseFile(queue);
+	}
 	else {
 		printf("不存在该指令:%s\n", instr);
 	}

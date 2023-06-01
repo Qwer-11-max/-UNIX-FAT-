@@ -17,11 +17,11 @@ void OpenFile(Files* fls, FILE* disk,Openqueue* queue)//将特定文件加入打开队列
 	Openqueue* temp_ptr = queue;
 	for (i = 0;i < 10;i++)
 	{
-		if (temp_ptr[i].f_ino == NULL)//如果检测到当前队列为空
+		if (temp_ptr[i].f_name[0] == '\0')//如果检测到当前队列为空
 		{
-			temp_ptr[i].f_ino = fls->file[loc].f_ino;//将文件名 拷入队列
-			strcpy(temp_ptr[i].f_name, filename);//拷入ino
-			temp_ptr[i].i_type = type;//拷入type
+			fseek(disk, SUPERBLKSIZE * CLUSTERSIZE + fls->file[loc].f_ino * INODESIZE,SEEK_SET);
+			fread(&temp_ptr[i].f_inode, sizeof(inode), 1, disk);	//拷入inode信息
+			strcpy(temp_ptr[i].f_name, filename);//拷入文件名
 			check = true;//修改布尔值
 			break;
 		}

@@ -73,8 +73,7 @@ typedef struct WholeName {
 
 typedef struct Openqueue {
 	char						f_name[FILENAMESIZE];	//文件名
-	unsigned short				f_ino;		//文件inode序号
-	type_t						i_type;   //文件类型
+	inode						f_inode;		//文件inode信息
 }Openqueue;
 
 //用户结构体
@@ -125,7 +124,7 @@ void chdir(superBlk* supblk, FILE* disk, inode* curPath, Files* fls, Files* path
 /*文件类*/
 void creatFile(superBlk* supblk, FILE* disk, Files* fls, uid_t uid, gid_t gid);//创建文件
 void OpenFile(Files* fls, FILE* disk, Openqueue* queue);//将特定文件加入打开队列
-void CloseFile(char* filename, type_t type, Openqueue* queue);//将特定文件从打开队列删除
+void CloseFile(Openqueue* queue);//将特定文件从打开队列删除
 void deleteFile(superBlk* supblk, FILE* disk, Files* fls); //删除文件
 void readFile();
 void writeFile();

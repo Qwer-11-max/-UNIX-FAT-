@@ -1,3 +1,5 @@
+/*×÷Õß£ºå¿èÝ*/
+
 #include <iostream>
 #include <string.h>
 #include "filesys.h"

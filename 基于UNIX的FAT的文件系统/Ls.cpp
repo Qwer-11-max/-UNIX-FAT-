@@ -1,3 +1,4 @@
+/*作者：马文轩*/
 #include"filesys.h"
 #include<IOSTREAM>
 #include<string.h>

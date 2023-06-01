@@ -129,6 +129,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="deleteFile.cpp" />
     <ClCompile Include="Split.cpp" />
     <ClCompile Include="CloseFile.cpp" />
     <ClCompile Include="creatFile.cpp" />

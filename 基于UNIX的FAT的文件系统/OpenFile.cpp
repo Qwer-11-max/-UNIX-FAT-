@@ -1,3 +1,4 @@
+/*作者：马文轩*/
 #include"filesys.h"
 #include<IOSTREAM>
 #include<string.h>
@@ -8,14 +9,14 @@ void OpenFile(Files* fls, FILE* disk, char* filename, type_t type,Openqueue* que
 {	
 	int i = 0;//用于循环
 	bool check = false;//用于判断是否成功存入
-	unsigned short temp_ino;//临时指针
-	temp_ino=getIno( fls, disk,filename, type);//依据文件名等信息获取 ino
+	unsigned short loc;//临时指针
+	loc=getIno( fls, disk,filename, type);//依据文件名等信息获取文件在fls中的位置
 	Openqueue* temp_ptr = queue;
 	for (i = 0;i < 10;i++)
 	{
 		if (temp_ptr[i].f_ino == NULL)//如果检测到当前队列为空
 		{
-			temp_ptr[i].f_ino = temp_ino;//将文件名 拷入队列
+			temp_ptr[i].f_ino = fls->file[loc].f_ino;//将文件名 拷入队列
 			strcpy(temp_ptr[i].f_name, filename);//拷入ino
 			temp_ptr[i].i_type = type;//拷入type
 			check = true;//修改布尔值

@@ -1,14 +1,13 @@
+/*×÷Õß£ºÂíÎÄĞù*/
 #include"filesys.h"
 #include<IOSTREAM>
 #include<string.h>
 using namespace std;
-void Split(WholeName* wholename, char* wholefilename)//ĞèÇó²ÎÊıÎª½á¹¹ÌåÖ¸Õë£¬ÒÔ¼°´æ·ÅÕû¸öÎÄ¼şÃûµÄ×Ö·ûÊı×éÖ¸Õë           //×¢Ã÷£¬Î´¶Ô·Ç·¨×´Ì¬ÏÂÊı¾İ½á¹¹ÄÚµÄÖµ×ĞÏ¸ÍÆÇÃ
+type_t Split(char* wholefilename)//ĞèÇó²ÎÊıÎª½á¹¹ÌåÖ¸Õë£¬ÒÔ¼°´æ·ÅÕû¸öÎÄ¼şÃûµÄ×Ö·ûÊı×éÖ¸Õë           //×¢Ã÷£¬Î´¶Ô·Ç·¨×´Ì¬ÏÂÊı¾İ½á¹¹ÄÚµÄÖµ×ĞÏ¸ÍÆÇÃ
 {
-	WholeName* temp_ptr = wholename;//½¨Á¢ÁÙÊ±Ö¸Õë³ĞÔØ´«ÈëµÄ²ÎÊıÖ¸Õë
 	int length;//ÊäÈëµÄÎÄ¼şÈ«Ãû³¤¶È
 	int location;//ÎÄ¼şÃûÖĞ×îºóÒ»¸ö¡®.¡¯µÄÎ»ÖÃ
 	bool check = false;//²¼¶û±äÁ¿±íÊ¾ÊÇ·ñËÑË÷µ½'.'
-	char temp_type[FILETYPESIZE] = {NULL};//ÁÙÊ±´æ·ÅÎÄ¼şºó×ºÉè¶¨ÎÄ¼şºó×º³¤¶ÈÎª9£¬³¬¹ı´Ë³¤¶È·Ç·¨£¬
 	length = strlen(wholefilename);//¼ì²âÊäÈëµÄ×Ö·ûÊı×é³¤¶È£»                 
 
 	for (int i = length - 1;i >= 0;i--)//µ¹Ñ­»·ÓÃÓÚÅĞ¶Ï×îºóÒ»¸ö¡°.¡±µÄÎ»ÖÃ
@@ -19,49 +18,48 @@ void Split(WholeName* wholename, char* wholefilename)//ĞèÇó²ÎÊıÎª½á¹¹ÌåÖ¸Õë£¬ÒÔ¼
 			check = true;
 			break;
 		}
-		else continue;
 	}
-	if (check == true)//Èç¹ûËÑË÷µ½ÁË¡®£¬¡¯
+
+	if (check == true)//Èç¹ûËÑË÷µ½ÁË¡®.¡¯
 	{
 		if (location == 0)//Èç¹ûÊäÈëÖĞµÄ¡®.¡¯ÔÚµÚÒ»¸ö×Ö·û£¬ÄÇÃ´·Ç·¨
 		{
 			cout << "ÊäÈëÎÄ¼şÃû·Ç·¨" << endl;
-			return;//´Ë´¦ÊÇ·ñÓĞ¸Ä½ø¿Õ¼ä£¿ÈÃº¯ÊıÍâÖªÏşÊÇ·ñ·Ç·¨£¿
+			return FILEERROR;//´Ë´¦ÊÇ·ñÓĞ¸Ä½ø¿Õ¼ä£¿ÈÃº¯ÊıÍâÖªÏşÊÇ·ñ·Ç·¨£¿
 		}
 		else if (location >13)//Èç¹û'.'ÔÚµÚ13¸ö×Ö·ûÖ®ºó£¬¼´ÎÄ¼şÃû³¤ÓÚ13
 		{
 			cout << "ÊäÈëÎÄ¼şÃû¹ı³¤" << endl;
-			return;
+			return FILEERROR;
 		}
 		else if (length - location - 1 > 8)//´Ë´¦¼ÆËãµÄÊÇºó×ºµÄÕæÊµ³¤¶È
 		{
 			cout << "ÊäÈëÎÄ¼şºó×º¹ı³¤" << endl;
-			return;
+			return FILEERROR;
 		}
 		else //µ±ÓĞ¡®.¡¯ÇÒ³¤¶È¶¼ºÏ·¨Ê±
 		{
-			for (int i = 0;i < location;i++)//²ğ·Ö´æ´¢
-				temp_ptr->f_name[i] = wholefilename[i];
-			temp_ptr->f_name[location] = '\0';
-			for (int i = location + 1;i < length;i++)
-				temp_type[i] = wholefilename[i];
+			char temp_type[FILENAMESIZE] = "\0";
+			int j = 0;
+			for (int i = location + 1; i < length; i++,j++) 
+				temp_type[j] = wholefilename[i];
 		//½ÓÏÂÀ´ÊÇ±È½Ï×Ö·û´®²¢ÇÒ¸ø½á¹¹Ìå¸³Öµ
 			char type0[9] = "dir";
 			char type1[9] = "txt";
 			char type2[9] = "default";
 			char type3[9] = "c";
-			if(strcmp(temp_type, type1)==0)
-				temp_ptr->i_type = TXT;
+			if(strcmp(temp_type, type1) == 0)
+				return TXT;
 			else if(strcmp(temp_type, type3)==0)
-				temp_ptr->i_type = C;
+				return  C;
 			else if (strcmp(temp_type, type0) == 0)
-				temp_ptr->i_type = DIR;
+				return  DIR;
 			else if (strcmp(temp_type, type2) == 0)
-				temp_ptr->i_type = DEFAULT;
+				return  DEFAULT;
 			else//Èç¹ûÉÏÊöËÄÖÖºó×º½Ô²»ÊÇ£¬ÄÇÃ´ÊäÈëµÄºó×º¾ÍÊÇ·Ç·¨µÄ
 			{
 				cout << "ÊäÈëµÄÎÄ¼şºó×º·Ç·¨" << endl;
-				return;
+				return FILEERROR;
 			}
 		}
 	}
@@ -69,16 +67,12 @@ void Split(WholeName* wholename, char* wholefilename)//ĞèÇó²ÎÊıÎª½á¹¹ÌåÖ¸Õë£¬ÒÔ¼
 	{
 		if (length <= 13)
 		{
-			for (int i = 0;i < length;i++)
-				temp_ptr->f_name[i] = wholefilename[i];
-			temp_ptr->f_name[length] = '\0';
-			temp_ptr->i_type = DEFAULT;
-			return;
+			return DEFAULT;
 		}
 		else//¹ı³¤·Ç·¨
 		{
 			cout << "ÎÄ¼şÃû¹ı³¤" << endl;
-			return;
+			return FILEERROR;
 
 		}
 	}

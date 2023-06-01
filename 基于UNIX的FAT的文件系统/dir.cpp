@@ -1,3 +1,5 @@
+/*作者：赵熙龙*/
+
 #include "filesys.h"
 
 #include<stdio.h>
@@ -5,18 +7,19 @@
 #include<string.h>
 
 //目录跳转功能
-void chdir(superBlk* supblk, FILE* disk, inode* curPath, Files* fls, Files* path) {
+void chdir(superBlk* supblk, FILE* disk, inode* curPath, Files* fls, Files* path) { //赵熙龙
 	//输入新的文件夹名
 	char filename[FILENAMESIZE] = "\0";
 	scanf("%s", filename);
 	if (strcmp(filename, "..")) {
 		//判断文件夹是否存在
-		unsigned short nextIno = getIno(fls, disk, filename, DIR);
-		if (nextIno == 0xffff) {
+		unsigned short loc = getIno(fls, disk, filename, DIR);
+		if (loc == 0xffff) {
 			printf("该目录不存在\n");
 			return;
 		}
 		//跳转到新的目录
+		unsigned short nextIno = fls->file[loc].f_ino;
 		setCurPath(supblk, disk, curPath, fls, nextIno);
 		//更新路径信息
 		path->file[path->size].f_ino = nextIno;
@@ -31,7 +34,7 @@ void chdir(superBlk* supblk, FILE* disk, inode* curPath, Files* fls, Files* path
 	fflush(stdin);
 }
 
-void mkdir(superBlk* supblk, FILE* disk, Files* fls) {
+void mkdir(superBlk* supblk, FILE* disk, Files* fls) { //赵熙龙
 	//输入子目录名
 	char filename[FILENAMESIZE];
 	scanf("%s", filename);

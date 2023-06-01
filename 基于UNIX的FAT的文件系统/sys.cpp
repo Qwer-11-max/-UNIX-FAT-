@@ -1,3 +1,4 @@
+/*作者：赵熙龙*/
 #include"filesys.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -131,22 +132,16 @@ int  setCurPath(superBlk* supblk, FILE* disk, inode* curPath, Files* fls, unsign
 	fread(fls, sizeof(Files), 1, disk);
 	return 0;
 }
-//遍历目录子文件列表，找到文件名对应的ino，如果没有则返回-1即0xFFFF
+//遍历目录子文件列表，返回fls中文件的位置，如果没有则返回-1即0xFFFF
 unsigned short getIno(Files* fls,FILE* disk, char* filename,type_t type) {
 	for (int i = 0; i < SUBFILENUM; i++) {
 		//判断文件名是否一致
 		if (!strcmp(filename,fls->file[i].f_name)) {
-			inode temp = {};
-			fseek(disk, SUPERBLKSIZE * CLUSTERSIZE + fls->file[i].f_ino * INODESIZE, SEEK_SET);
-			fread(&temp, sizeof(inode), 1, disk);
-			//判断文件类型是否一致
-			if(temp.i_type == type)
-				//返回ino
-				return fls->file[i].f_ino;
+			return i;
 		}
 	}
 	//不存在这个文件则返回-1
-	return -1;
+	return 0xffff;
 }
 //释放inode节点
 int freeInode(superBlk* supblk, FILE* disk, unsigned short ino) {
@@ -177,10 +172,11 @@ int freeInode(superBlk* supblk, FILE* disk, unsigned short ino) {
 	supblk->free_blk += target.i_blkCnt;
 	supblk->free_disk += target.i_size;
 	supblk->inode_free += 1;
+	supblk->inode_count -= 1;
 	
 	int row = ino / 16; // 重置inode位图的信息
 	int loc = ino % 16;
-	SetOne(supblk->bitmap_inode[row], loc);
+	supblk->bitmap_inode[row] -= 1 << loc;
 	//inode节点释放完毕
 	return 0;
 }
@@ -286,16 +282,22 @@ void powerOn(FILE** disk, superBlk** supblk, inode** curPath, Files** fls,Files*
 	int j = 0;
 	for (int i = 0; i <(*curPath)->i_blkCnt; i++) {
 		fseek(*disk, SYSCLUSTERSIZE * CLUSTERSIZE + FATList[i] * CLUSTERSIZE, SEEK_SET);
-		fread(&(*fls)->file[j], sizeof(file), CLUSTERSIZE / sizeof(file), *disk);
-		j += CLUSTERSIZE / sizeof(file);
+		fread(*fls, sizeof(Files),1, *disk);
 	}
 	free(FATList);
 }
 //系统停机
-void halt(superBlk* supblk,FILE* disk) {
+void halt(superBlk* supblk,FILE* disk,inode* curPath,Files* fls) {
 	fseek(disk, 0, SEEK_SET);
 	//保存超级块信息
 	fwrite(supblk,sizeof(superBlk),1,disk);
+	//保存当前目录信息
+	//1.保存inode
+	fseek(disk, SUPERBLKSIZE * CLUSTERSIZE + curPath->i_ino * INODESIZE, SEEK_SET);
+	fwrite(curPath, sizeof(inode), 1, disk);
+	//2.保存子目录
+	fseek(disk, SYSCLUSTERSIZE * CLUSTERSIZE + curPath->i_addr * CLUSTERSIZE, SEEK_SET);
+	fwrite(fls, sizeof(Files), 1, disk);
 	printf("系统关机成功\n");
 }
 
@@ -332,11 +334,14 @@ void mainWindows(superBlk* supblk, FILE* disk, inode* curPath, User* curUser, Fi
 		system("cls");
 	}
 	else if (!(strcmp(instr, "exit"))) {
-		halt(supblk,disk);
+		halt(supblk,disk,curPath,fls);
 		exit(0);
 	}
+	else if (!strcmp(instr, "del")) {
+		deleteFile(supblk, disk, fls);
+	}
 	else {
-		printf("不存在该指令:%s", instr);
+		printf("不存在该指令:%s\n", instr);
 	}
 
 	fflush(stdin);

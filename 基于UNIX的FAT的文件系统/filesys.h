@@ -32,6 +32,7 @@
 #define UNDELETE			0x10 //选择时不可删除，默认可以删除
 #define LIST				0X11 //选择时可以列表
 /*文件类型*/
+#define FILEERROR			0xffff //文件类型错误
 #define C					0x03 //.c文件
 #define DEFAULT             0x02 //默认文件类型
 #define TXT					0x01 //txt文件
@@ -106,7 +107,7 @@ int  setCurPath(superBlk* supblk, FILE* disk, inode* curPath, Files* fls, unsign
 int freeInode(superBlk* supblk, FILE* disk, unsigned short ino); //释放占用的inode
 unsigned short getIno(Files* fls, FILE* disk, char* filename, type_t type);//遍历目录子文件列表，找到文件名对应的ino，如果没有则返回-1即0xFFFF
 void allocBlk(superBlk* supblk, inode* target, unsigned short size); //为文件分配额外的空间
-void Split(WholeName* wholename,char* wholefilename);//拆分输入信息函数
+type_t Split(char* wholefilename);//拆分输入信息函数
 
 
 /*=================功能模块=======================*/
@@ -114,7 +115,8 @@ void Split(WholeName* wholename,char* wholefilename);//拆分输入信息函数
 void mainWindows(superBlk* supblk, FILE* disk, inode* curPath, User* curUser, Files* fls, Files* path); //系统子界面
 void powerOn(FILE** disk, superBlk** supblk, inode** curPath, Files** files, Files** path); //系统开机
 void InitSys(superBlk* supblk, FILE* disk);	//初始化系统
-void halt(superBlk* supblk,FILE* disk); //系统停机
+void halt(superBlk* supblk, FILE* disk, inode* curPath, Files* fls); //系统停机
+
 /*目录类*/
 void mkdir(superBlk* supblk, FILE* disk, Files* fls);//创建目录
 void Ls(Files* fls);//展示当前目录所包含文件名
@@ -124,6 +126,9 @@ void chdir(superBlk* supblk, FILE* disk, inode* curPath, Files* fls, Files* path
 void creatFile(superBlk* supblk, FILE* disk, Files* fls, uid_t uid, gid_t gid);//创建文件
 void OpenFile(Files* fls, FILE* disk, char* filename, type_t type, Openqueue* queue);//将特定文件加入打开队列
 void CloseFile(char* filename, type_t type, Openqueue* queue);//将特定文件从打开队列删除
+void deleteFile(superBlk* supblk, FILE* disk, Files* fls); //删除文件
+void readFile();
+void writeFile();
 
 /*用户类*/
 User* login(superBlk* superBlk1, char* u_name, char* u_pwd, User* act_user);//登录函数,返回用户结构体的指针。

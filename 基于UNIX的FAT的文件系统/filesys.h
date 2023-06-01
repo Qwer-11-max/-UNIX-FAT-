@@ -130,7 +130,7 @@ void readFile();
 void writeFile();
 
 /*用户类*/
-User* login(superBlk* superBlk1, char* u_name, char* u_pwd, User* act_user);//登录函数,返回用户结构体的指针。
-bool create_user(superBlk* superBlk1, char* new_name, char* new_pwd);//创建新用户函数,返回bool类型
+bool login(superBlk* superBlk1, User* act_user);//登录函数,返回用户结构体的指针。
+bool create_user(superBlk* superBlk1);//创建新用户函数,返回bool类型
 
 #endif

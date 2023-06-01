@@ -183,7 +183,7 @@ int freeInode(superBlk* supblk, FILE* disk, unsigned short ino) {
 //初始化文件系统
 void InitSys(superBlk *supblk,FILE* disk) {
 	//初始化用户,创建root用户
-	supblk->users[0].uid = 0;
+	supblk->users[0].uid = 1;
 	supblk->users[0].u_mode = ADMIN;
 	strcat(supblk->users[0].u_name, "root");
 	strcat(supblk->users[0].u_pwd, "123456");
@@ -310,7 +310,7 @@ void mainWindows(superBlk* supblk, FILE* disk, inode* curPath, User* curUser, Fi
 	//printf("================================================================================================\n");
 	//printf("功能列表:\n");
 	//printf("1.创建文件\n2.删除文件\n3.跳转目录\n4.创建目录\n5.列出当前目录子文件列表\n");
-	printf("<%s@%06d>  C:","root",0);
+	printf("<%s@%06d>  C:",curUser->u_name,curUser->uid);
 	for (int i = 0; i < path->size; i++) {
 		printf("\\%s", path->file[i].f_name);
 	}
@@ -325,7 +325,7 @@ void mainWindows(superBlk* supblk, FILE* disk, inode* curPath, User* curUser, Fi
 		mkdir(supblk, disk, fls);
 	}
 	else if (!strcmp(instr, "touch")) {
-		creatFile(supblk, disk, fls, 0, 0);
+		creatFile(supblk, disk, fls, curUser->uid, 0);
 	}
 	else if (!strcmp(instr, "ls")) {
 		Ls(fls);
@@ -345,6 +345,9 @@ void mainWindows(superBlk* supblk, FILE* disk, inode* curPath, User* curUser, Fi
 	}
 	else if (!strcmp(instr, "close")) {
 		CloseFile(queue);
+	}
+	else if (!strcmp(instr, "createUser")) {
+		create_user(supblk);
 	}
 	else {
 		printf("不存在该指令:%s\n", instr);

@@ -124,8 +124,8 @@ void chdir(superBlk* supblk, FILE* disk, inode* curPath, Files* fls, Files* path
 
 /*文件类*/
 void creatFile(superBlk* supblk, FILE* disk, Files* fls, uid_t uid, gid_t gid);//创建文件
-void OpenFile(Files* fls, FILE* disk, char* filename, type_t type, Openqueue* queue);//将特定文件加入打开队列
-void CloseFile(char* filename, type_t type, Openqueue* queue);//将特定文件从打开队列删除
+void OpenFile(Files* fls, FILE* disk, char* wholefilename, Openqueue* queue);//将特定文件加入打开队列
+void CloseFile(char* wholefilename, Openqueue* queue);//将特定文件从打开队列删除
 void deleteFile(superBlk* supblk, FILE* disk, Files* fls); //删除文件
 void readFile();
 void writeFile();

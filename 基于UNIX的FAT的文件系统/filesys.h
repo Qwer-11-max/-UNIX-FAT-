@@ -15,6 +15,7 @@
 #define BITMAPSIZE			(FATSIZE/16)	//位图的大小   32
 #define MAXUSERS			8		//用户数量限定
 #define SUBFILENUM			(CLUSTERSIZE/(FILENAMESIZE+2))		//一个目录下文件数量限制  1024/16            64
+#define BUFSIZE				1024 //输入缓冲区大小
 /*磁盘划分*/
 #define SUPERBLKSIZE		2	//超级块占用两个簇
 #define INODEBLKSIZE		(INODESIZE*CLUSTERNUM/CLUSTERSIZE) //inode区占用的簇大小        32*512/1024=16
@@ -111,7 +112,7 @@ type_t Split(char* wholefilename);//拆分输入信息函数
 
 /*=================功能模块=======================*/
 /*系统类*/
-void mainWindows(superBlk* supblk, FILE* disk, inode* curPath, User* curUser, Files* fls, Files* path,Openqueue* queue); //系统子界面
+bool mainWindows(superBlk* supblk, FILE* disk, inode* curPath, User* curUser, Files* fls, Files* path,Openqueue* queue); //系统子界面
 void powerOn(FILE** disk, superBlk** supblk, inode** curPath, Files** files, Files** path); //系统开机
 void InitSys(superBlk* supblk, FILE* disk);	//初始化系统
 void halt(superBlk* supblk, FILE* disk, inode* curPath, Files* fls); //系统停机
@@ -126,8 +127,8 @@ void creatFile(superBlk* supblk, FILE* disk, Files* fls, uid_t uid, gid_t gid);/
 void OpenFile(Files* fls, FILE* disk, Openqueue* queue);//将特定文件加入打开队列
 void CloseFile(Openqueue* queue);//将特定文件从打开队列删除
 void deleteFile(superBlk* supblk, FILE* disk, Files* fls); //删除文件
-void readFile();
-void writeFile();
+void readFile(); //从文件中读数据
+void writeFile(superBlk* supblk,FILE* disk,Openqueue* queue);//向文件中写数据
 
 /*用户类*/
 bool login(superBlk* superBlk1, User* act_user);//登录函数,返回用户结构体的指针。

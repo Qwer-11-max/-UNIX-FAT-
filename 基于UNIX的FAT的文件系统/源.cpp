@@ -17,9 +17,9 @@ int main() {
 	//Ä£Äâ¿ª»ú
 	powerOn(&disk, &supblk, &curPath, &files,&path); 
 	//µÇÂ¼
-	while (!login(supblk, &curUser));
 	while (1) {
-		mainWindows(supblk, disk, curPath,&curUser, files, path,Openqueue);
+		while (!login(supblk, &curUser));
+		while (mainWindows(supblk, disk, curPath, &curUser, files, path, Openqueue));
 	}
 	fclose(disk);
 

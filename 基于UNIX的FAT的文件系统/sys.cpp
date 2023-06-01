@@ -302,7 +302,7 @@ void halt(superBlk* supblk,FILE* disk,inode* curPath,Files* fls) {
 }
 
 //主界面
-void mainWindows(superBlk* supblk, FILE* disk, inode* curPath, User* curUser, Files* fls,Files* path,Openqueue* queue) {
+bool mainWindows(superBlk* supblk, FILE* disk, inode* curPath, User* curUser, Files* fls,Files* path,Openqueue* queue) {
 	//printf("系统剩余资源资源一览:\n");
 	//printf("================================================================================================\n");
 	//printf("| 磁盘大小：%10d Byte\t| 磁盘剩余空间: %10d Byte\t| 磁盘剩余inode数量：%10d|\n", supblk->disk_size, supblk->free_disk, supblk->inode_free);
@@ -349,9 +349,16 @@ void mainWindows(superBlk* supblk, FILE* disk, inode* curPath, User* curUser, Fi
 	else if (!strcmp(instr, "createUser")) {
 		create_user(supblk);
 	}
+	else if (!strcmp(instr, "writeFile")) {
+		writeFile(supblk, disk, queue);
+	}
+	else if (!strcmp(instr, "logout")) {
+		return false;
+	}
 	else {
 		printf("不存在该指令:%s\n", instr);
 	}
 
 	fflush(stdin);
+	return true;
 }

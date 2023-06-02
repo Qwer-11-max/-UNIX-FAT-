@@ -23,6 +23,7 @@ void OpenFile(Files* fls, FILE* disk,Openqueue* queue)//将特定文件加入打开队列
 			fread(&temp_ptr[i].f_inode, sizeof(inode), 1, disk);	//拷入inode信息
 			strcpy(temp_ptr[i].f_name, filename);//拷入文件名
 			check = true;//修改布尔值
+			cout << filename << "已打开\n";
 			break;
 		}
 		else

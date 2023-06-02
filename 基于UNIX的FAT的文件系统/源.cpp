@@ -18,16 +18,9 @@ int main() {
 	powerOn(&disk, &supblk, &curPath, &files,&path); 
 	//登录
 	while (1) {
-		//while (!login(supblk, &curUser));
+		while (!login(supblk, &curUser));
 		while (mainWindows(supblk, disk, curPath, &curUser, files, path, Openqueue));
 	}
 	fclose(disk);
-
-	/*创建一个磁盘*/
-	//FILE* disk;
-	//disk = fopen("disk","w");
-	//unsigned short data[256 * 1024] = { 0 };
-	//fwrite(data,sizeof(unsigned short),256*1024,disk);
-	//fclose(disk);
 	return 0;
 }

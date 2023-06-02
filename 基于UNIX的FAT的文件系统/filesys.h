@@ -112,7 +112,7 @@ type_t Split(char* wholefilename);//拆分输入信息函数
 
 /*=================功能模块=======================*/
 /*系统类*/
-bool mainWindows(superBlk* supblk, FILE* disk, inode* curPath, User* curUser, Files* fls, Files* path,Openqueue* queue); //系统子界面
+bool mainWindows(superBlk* supblk, FILE* disk, inode* curPath, User* curUser, Files* fls, Files* path,Openqueue* queue); //系统主界面
 void powerOn(FILE** disk, superBlk** supblk, inode** curPath, Files** files, Files** path); //系统开机
 void InitSys(superBlk* supblk, FILE* disk);	//初始化系统
 void halt(superBlk* supblk, FILE* disk, inode* curPath, Files* fls); //系统停机

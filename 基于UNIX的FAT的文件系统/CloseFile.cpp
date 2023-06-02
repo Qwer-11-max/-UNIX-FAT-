@@ -19,12 +19,13 @@ void CloseFile(Openqueue* queue)
 			temp_ptr[i].f_name[0] = '\0';
 			temp_ptr[i].f_inode = { NULL };
 			check = true;
+
 			return;
 		}
 		else continue;
 	}
 	if (check == true)
-		cout << "successful close" << endl;
+		cout << filename <<"已关闭" << endl;
 	else
 		cout << "失败，文件名可能存在错误" << endl;
 	return;

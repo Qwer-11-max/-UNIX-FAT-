@@ -7,7 +7,6 @@ using namespace std;
 
 void readFile(superBlk* supblk, FILE* disk, Openqueue* queue) {
 	char filename[FILENAMESIZE];
-	cout << "请输入文件名:";
 	cin >> filename;
 
 	bool check = false;
@@ -24,7 +23,7 @@ void readFile(superBlk* supblk, FILE* disk, Openqueue* queue) {
 		return;
 	}
 
-	char* buf = new char[target->i_size] {'\0'};
+	char *buf=new char[target->i_size];
 	int blknum=0;
 	unsigned short* FATList = getFATList(supblk, target);
 	for(int i=0;i<target->i_blkCnt;i++){

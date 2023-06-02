@@ -103,7 +103,7 @@ unsigned short* getFATList(superBlk * supblk,inode* target) {
 	unsigned short addr = supblk->FAT[target->i_addr];
 	while (addr != 0xffff) {
 		i += 1;
-		*(FATList + i) = addr;
+		FATList[i] = addr;
 		addr = supblk->FAT[addr];
 	}
 	return FATList;
@@ -357,6 +357,13 @@ bool mainWindows(superBlk* supblk, FILE* disk, inode* curPath, User* curUser, Fi
 	}
 	else if (!strcmp(instr, "read")) {
 		readFile(supblk, disk, queue);
+	}
+	else if (!strcmp(instr, "format")) {
+		fseek(disk, 0, SEEK_SET);
+		unsigned short data[256 * 1024] = { 0 };
+		fwrite(data, sizeof(unsigned short), 256 * 1024, disk);
+		fclose(disk);
+		exit(0);
 	}
 	else {
 		printf("不存在该指令:%s\n", instr);

@@ -1,3 +1,4 @@
+/*赵熙龙*/
 #include"filesys.h"
 #include<iostream>
 #include <string.h>
@@ -53,6 +54,8 @@ void writeFile(superBlk* supblk, FILE* disk, Openqueue* queue) {
 		rest -= blkRest;
 		b += blkRest;
 	}
+	fseek(disk, SUPERBLKSIZE * CLUSTERSIZE + target->i_ino * INODESIZE, SEEK_SET);
+	fwrite(target, sizeof(inode), 1, disk);
 	//写文件成功
 	cout << "文件写入成功\n";
 }
